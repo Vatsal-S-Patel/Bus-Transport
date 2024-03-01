@@ -35,6 +35,7 @@ func (c *Controller) CreateScheduleHandler(w http.ResponseWriter, r *http.Reques
 }
 
 func (c *Controller) GetAllScheduleHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 
 	routes, err := database.GetAllSchedule(c.DB)
 	if err != nil {
