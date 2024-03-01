@@ -17,3 +17,26 @@ func InsertRouteStation(db *sql.DB, routeStation model.RouteStation) error {
 	log.Println("RouteStation inserted successfully")
 	return nil
 }
+
+func GetAllRouteStation(db *sql.DB) ([]model.RouteStation, error) {
+	sqlStatement := `SELECT * FROM transport.routestations;`
+
+	res, err := db.Query(sqlStatement)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Close()
+
+	var routeStations []model.RouteStation
+	for res.Next() {
+		var routeStation model.RouteStation
+		err := res.Scan(&routeStation.RouteId, &routeStation.StationId, &routeStation.StationOrder)
+		if err != nil {
+			log.Println(err.Error())
+			return nil, err
+		}
+		routeStations = append(routeStations, routeStation)
+	}
+
+	return routeStations, nil
+}

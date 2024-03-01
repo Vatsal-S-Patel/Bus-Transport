@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 func (c *Controller) CreateBusHandler(w http.ResponseWriter, r *http.Request) {
@@ -33,22 +35,55 @@ func (c *Controller) CreateBusHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (c *Controller) CreateAllHandler(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) GetAllBusHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 
-	var schedules []model.Schedule
-
-	database.InsertAll("csvs/Bus_Route_Shedule - Sheet1.csv", nil, nil, &schedules, nil, nil, nil)
-	log.Println(schedules)
-	for _, schedule := range schedules {
-		err := database.InsertSchedule(c.DB, schedule)
-		if err != nil {
-			log.Println(err.Error())
-			return
-		}
+	buses, err := database.GetAllBus(c.DB)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
-	log.Println("For lopp chal gaya")
 
-	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte("Successfull All"))
+	err = json.NewEncoder(w).Encode(buses)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
+	w.WriteHeader(http.StatusOK)
 }
+
+func (c *Controller) DeleteBusHandler(w http.ResponseWriter, r *http.Request) {
+
+	err := database.DeleteBus(c.DB, mux.Vars(r)["id"])
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Bus Deleted"))
+}
+
+// func (c *Controller) CreateAllHandler(w http.ResponseWriter, r *http.Request) {
+
+// 	var schedules []model.Schedule
+
+// 	database.InsertAll("csvs/Bus_Route_Shedule - Sheet1.csv", nil, nil, &schedules, nil, nil, nil)
+// 	log.Println(schedules)
+// 	for _, schedule := range schedules {
+// 		err := database.InsertSchedule(c.DB, schedule)
+// 		if err != nil {
+// 			log.Println(err.Error())
+// 			return
+// 		}
+// 	}
+// 	log.Println("For lopp chal gaya")
+
+// 	w.WriteHeader(http.StatusCreated)
+// 	w.Write([]byte("Successfull All"))
+
+// }
