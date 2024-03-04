@@ -24,13 +24,13 @@ func (c *Controller) CreateDriverHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(driver)
 	if err != nil {
 		log.Println(err.Error())
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(driver.Name + "Inserted Successfully"))
 
 }
@@ -45,6 +45,7 @@ func (c *Controller) GetAllDriverHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(drivers)
 	if err != nil {
 		log.Println(err.Error())
@@ -52,7 +53,6 @@ func (c *Controller) GetAllDriverHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
 }
 
 func (c *Controller) DeleteDriverHandler(w http.ResponseWriter, r *http.Request) {

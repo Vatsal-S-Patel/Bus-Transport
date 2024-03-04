@@ -25,27 +25,28 @@ func (app *App) InitializeRoutes() {
 
 	busRouter.HandleFunc("/", app.controller.CreateBusHandler).Methods("POST")
 	busRouter.HandleFunc("/", app.controller.GetAllBusHandler).Methods("GET")
-	busRouter.HandleFunc("/{id}", app.controller.DeleteBusHandler).Methods("DELETE")
+	busRouter.HandleFunc("/{id}", app.controller.DeleteBusHandler).Methods("POST")
 
 	driverRouter.HandleFunc("/", app.controller.CreateDriverHandler).Methods("POST")
 	driverRouter.HandleFunc("/", app.controller.GetAllDriverHandler).Methods("GET")
-	driverRouter.HandleFunc("/{id}", app.controller.DeleteDriverHandler).Methods("DELETE")
+	driverRouter.HandleFunc("/{id}", app.controller.DeleteDriverHandler).Methods("POST")
 
 	routeRouter.HandleFunc("/", app.controller.CreateRouteHandler).Methods("POST")
 	routeRouter.HandleFunc("/", app.controller.GetAllRouteHandler).Methods("GET")
-	routeRouter.HandleFunc("/{id}", app.controller.DeleteRouteHandler).Methods("DELETE")
+	routeRouter.HandleFunc("/{id}", app.controller.DeleteRouteHandler).Methods("POST")
 
 	routeStationRouter.HandleFunc("/", app.controller.CreateRouteStationHandler).Methods("POST")
 	routeStationRouter.HandleFunc("/", app.controller.GetAllRouteStationHandler).Methods("GET")
 
 	scheduleRouter.HandleFunc("/", app.controller.CreateScheduleHandler).Methods("POST")
+	scheduleRouter.HandleFunc("/GetUpcomingBus/{id}", app.controller.GetUpcomingBus).Methods("GET")
 	scheduleRouter.HandleFunc("/", app.controller.GetAllScheduleHandler).Methods("GET")
-	scheduleRouter.HandleFunc("/{id}", app.controller.DeleteScheduleHandler).Methods("DELETE")
+	scheduleRouter.HandleFunc("/{id}", app.controller.DeleteScheduleHandler).Methods("POST")
 
 	stationRouter.HandleFunc("/", app.controller.CreateStationHandler).Methods("POST")
 	stationRouter.HandleFunc("/", app.controller.GetAllStationHandler).Methods("GET")
-	stationRouter.HandleFunc("/{id}", app.controller.DeleteStationHandler).Methods("DELETE")
-	stationRouter.HandleFunc("/routeFromStation/{id}", app.controller.SelectRouteFromSourceOrDestination).Methods("GET")
+	stationRouter.HandleFunc("/{id}", app.controller.DeleteStationHandler).Methods("POST")
+	// stationRouter.HandleFunc("/routeFromStation/{id}", app.controller.SelectRouteFromSourceOrDestination).Methods("GET")
 
 	// For All Entries from CSVs
 	// busRouter.HandleFunc("/all", app.controller.CreateAllHandler).Methods("POST")

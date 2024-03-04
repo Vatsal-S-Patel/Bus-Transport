@@ -43,8 +43,7 @@ func GetAllBus(db *sql.DB) ([]model.Bus, error) {
 }
 
 func DeleteBus(db *sql.DB, id string) error {
-	sqlStatement := `DELETE FROM transtport.bus WHERE id=$1`
-
+	sqlStatement := `DELETE FROM transport.bus WHERE id=$1`
 	newId, err := strconv.Atoi(id)
 	if err != nil {
 		log.Println(err.Error())

@@ -30,7 +30,7 @@ func (c *Controller) CreateRouteHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(route.Name + "Inserted Successfully"))
 
 }
@@ -44,6 +44,8 @@ func (c *Controller) GetAllRouteHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(routes)
 	if err != nil {
 		log.Println(err.Error())
@@ -51,8 +53,6 @@ func (c *Controller) GetAllRouteHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
 }
 
 func (c *Controller) DeleteRouteHandler(w http.ResponseWriter, r *http.Request) {

@@ -43,7 +43,7 @@ func GetAllRoute(db *sql.DB) ([]model.Route, error) {
 }
 
 func DeleteRoute(db *sql.DB, id string) error {
-	sqlStatement := `DELETE FROM transtport.route WHERE id=$1`
+	sqlStatement := `DELETE FROM transport.route WHERE id=$1`
 
 	newId, err := strconv.Atoi(id)
 	if err != nil {

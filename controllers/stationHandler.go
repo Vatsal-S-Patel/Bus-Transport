@@ -24,13 +24,13 @@ func (c *Controller) CreateStationHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(station)
 	if err != nil {
 		log.Println(err.Error())
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(station.Name + "Inserted Successfully"))
 }
 
@@ -44,6 +44,7 @@ func (c *Controller) GetAllStationHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(routes)
 	if err != nil {
 		log.Println(err.Error())
@@ -51,7 +52,6 @@ func (c *Controller) GetAllStationHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
 }
 
 func (c *Controller) DeleteStationHandler(w http.ResponseWriter, r *http.Request) {
@@ -77,6 +77,7 @@ func (c *Controller) SelectRouteFromSourceOrDestination(w http.ResponseWriter, r
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(routeStations)
 	if err != nil {
 		log.Println(err.Error())
@@ -84,5 +85,4 @@ func (c *Controller) SelectRouteFromSourceOrDestination(w http.ResponseWriter, r
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
 }

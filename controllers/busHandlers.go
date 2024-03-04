@@ -23,21 +23,22 @@ func (c *Controller) CreateBusHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err.Error())
 		return
 	}
-
+	log.Println("bus created ", bus)
+	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(bus)
 	if err != nil {
 		log.Println(err.Error())
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(bus.RegistrationNumber + "Inserted Successfully"))
 
 }
 
 func (c *Controller) GetAllBusHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
 	buses, err := database.GetAllBus(c.DB)
 	if err != nil {
 		log.Println(err.Error())
@@ -52,11 +53,12 @@ func (c *Controller) GetAllBusHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
 }
 
 func (c *Controller) DeleteBusHandler(w http.ResponseWriter, r *http.Request) {
-
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	err := database.DeleteBus(c.DB, mux.Vars(r)["id"])
 	if err != nil {
 		log.Println(err.Error())
@@ -83,7 +85,7 @@ func (c *Controller) DeleteBusHandler(w http.ResponseWriter, r *http.Request) {
 // 	}
 // 	log.Println("For lopp chal gaya")
 
-// 	w.WriteHeader(http.StatusCreated)
+// 	w.WriteHeader(http.StatusOK)
 // 	w.Write([]byte("Successfull All"))
 
 // }

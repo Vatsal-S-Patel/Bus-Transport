@@ -43,7 +43,7 @@ func GetAllStation(db *sql.DB) ([]model.Station, error) {
 }
 
 func DeleteStation(db *sql.DB, id string) error {
-	sqlStatement := `DELETE FROM transtport.station WHERE id=$1`
+	sqlStatement := `DELETE FROM transport.station WHERE id=$1`
 
 	newId, err := strconv.Atoi(id)
 	if err != nil {

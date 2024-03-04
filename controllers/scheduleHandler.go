@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -24,13 +25,13 @@ func (c *Controller) CreateScheduleHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(schedule)
 	if err != nil {
 		log.Println(err.Error())
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(string(rune(schedule.Id)) + "Inserted Successfully"))
 }
 
@@ -44,6 +45,7 @@ func (c *Controller) GetAllScheduleHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(routes)
 	if err != nil {
 		log.Println(err.Error())
@@ -51,7 +53,6 @@ func (c *Controller) GetAllScheduleHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
 }
 
 func (c *Controller) DeleteScheduleHandler(w http.ResponseWriter, r *http.Request) {
@@ -66,4 +67,27 @@ func (c *Controller) DeleteScheduleHandler(w http.ResponseWriter, r *http.Reques
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Schedule Deleted"))
+}
+
+func (c *Controller) GetUpcomingBus(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	// var body map[string]string = map[string]string{}
+
+	// err := json.NewDecoder(r.Body).Decode(&body)
+	variable := mux.Vars(r)
+	id, err := strconv.Atoi(variable["id"])
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	ouput, err := database.GetUpcomingBus(c.DB, id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(&ouput)
 }

@@ -52,3 +52,9 @@ type Station struct {
 	Lat  float64 `json:"lat" sql:"lat"`
 	Long float64 `json:"long" sql:"long"`
 }
+
+type UpcomingBus struct {
+	Name string  `json:"name" sql:"name"`
+	Source string `json:"source" sql:"source"`
+	Destination string `json:"destination" sql:"destinaiton"`
+}

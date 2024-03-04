@@ -45,7 +45,7 @@ func GetAllDriver(db *sql.DB) ([]model.Driver, error) {
 }
 
 func DeleteDriver(db *sql.DB, id string) error {
-	sqlStatement := `DELETE FROM transtport.driver WHERE id=$1`
+	sqlStatement := `DELETE FROM transport.driver WHERE id=$1`
 
 	newId, err := strconv.Atoi(id)
 	if err != nil {

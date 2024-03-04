@@ -22,13 +22,13 @@ func (c *Controller) CreateRouteStationHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(routeStation)
 	if err != nil {
 		log.Println(err.Error())
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte("RouteStation Inserted Successfully"))
 }
 
@@ -42,6 +42,7 @@ func (c *Controller) GetAllRouteStationHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(routeStations)
 	if err != nil {
 		log.Println(err.Error())
@@ -49,5 +50,4 @@ func (c *Controller) GetAllRouteStationHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
 }
