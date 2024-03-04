@@ -54,7 +54,7 @@ type Station struct {
 }
 
 type UpcomingBus struct {
-	Name string  `json:"name" sql:"name"`
-	Source string `json:"source" sql:"source"`
+	Name        string `json:"name" sql:"name"`
+	Source      string `json:"source" sql:"source"`
 	Destination string `json:"destination" sql:"destinaiton"`
 }
