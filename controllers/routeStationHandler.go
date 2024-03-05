@@ -4,6 +4,7 @@ import (
 	"busproject/database"
 	"busproject/model"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -50,4 +51,26 @@ func (c *Controller) GetAllRouteStationHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
+}
+
+func (c *Controller) CreateMappingHandler(mapping model.RouteStationMerged, mappingId int) int {
+
+	if len(mapping.RouteStationArray) == 0 {
+		return http.StatusBadRequest
+	}
+
+	insertQuery := "INSERT INTO transport.routestations (route_id, station_id, station_order) VALUES "
+
+	for _, v := range mapping.RouteStationArray {
+		insertQuery += fmt.Sprintf("(%d, %d, %d),", mappingId, v.StationId, v.StationOrder)
+	}
+
+	err := database.InsertAllRouteStation(c.DB, insertQuery)
+	if err != nil {
+		log.Println(err.Error())
+		return http.StatusBadRequest
+	}
+
+	log.Println("Mapping Successful")
+	return http.StatusOK
 }

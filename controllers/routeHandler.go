@@ -10,39 +10,33 @@ import (
 	"github.com/gorilla/mux"
 )
 
-
-
 func (c *Controller) CreateRouteHandler(w http.ResponseWriter, r *http.Request) {
 	var routeWithStationOrder model.RouteStationMerged
 
+	log.Println(r.Body)
 	err := json.NewDecoder(r.Body).Decode(&routeWithStationOrder)
 	if err != nil {
 		log.Println(err.Error())
-		http.Error(w,err.Error(),http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	err = database.InsertRoute(c.DB, routeWithStationOrder.Route)
-	if err!= nil {
+	if err != nil {
 		log.Println(err.Error())
-		http.Error(w,err.Error(),http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	
-	for _,v := range routeWithStationOrder.RouteStation{
-		log.Println("inserting staiton with ",routeWithStationOrder.Id," name ", v.StationId," with order " ,v.StationOrder)
-		err := database.InsertRouteStation(c.DB,v)
 
-		if err != nil {
-			log.Println(err.Error())
-			http.Error(w,err.Error(),http.StatusInternalServerError)
-			return
-		}
+	mappingStatusCode := c.CreateMappingHandler(routeWithStationOrder, routeWithStationOrder.Id)
+	if mappingStatusCode != http.StatusOK {
+		w.WriteHeader(mappingStatusCode)
+		w.Write([]byte(routeWithStationOrder.Name + "Something Bad Happened"))
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(routeWithStationOrder.Name + "Inserted Successfully"))
-
 }
 
 func (c *Controller) GetAllRouteHandler(w http.ResponseWriter, r *http.Request) {

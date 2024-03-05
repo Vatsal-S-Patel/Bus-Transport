@@ -18,6 +18,18 @@ func InsertRouteStation(db *sql.DB, routeStation model.RouteStation) error {
 	return nil
 }
 
+func InsertAllRouteStation(db *sql.DB, sqlStatement string) error {
+
+	log.Println(sqlStatement)
+	_, err := db.Exec(sqlStatement[:len(sqlStatement)-1] + ";")
+	if err != nil {
+		return err
+	}
+
+	log.Println("All RouteStation inserted successfully")
+	return nil
+}
+
 func GetAllRouteStation(db *sql.DB) ([]model.RouteStation, error) {
 	sqlStatement := `SELECT * FROM transport.routestations;`
 
