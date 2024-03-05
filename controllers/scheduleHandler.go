@@ -88,6 +88,7 @@ func (c *Controller) GetUpcomingBus(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(err.Error()))
 		return
 	}
+	
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(&ouput)
 }

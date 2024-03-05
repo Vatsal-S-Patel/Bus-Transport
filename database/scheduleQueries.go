@@ -3,6 +3,7 @@ package database
 import (
 	"busproject/model"
 	"database/sql"
+	"errors"
 	"log"
 	"strconv"
 )
@@ -63,17 +64,23 @@ func DeleteSchedule(db *sql.DB, id string) error {
 func GetUpcomingBus(db *sql.DB, id int) ([]model.UpcomingBus, error) {
 	// sqlStatement := `SELECT "name","source",destination FROM (SELECT route_id FROM transport.routestations INNER JOIN transport.station ON station_id = transport.station.id WHERE transport.station.id = $1 ) as r INNER JOIN transport.route ON transport.route.id = r.route_id WHERE status = 1;`
 	// sqlStatement := `SELECT "name","source",destination FROM transport.routestations inner join transport.route on route_id = transport.route.id WHERE station_id = $1;`
-	sqlStatement := `SELECT "name","source",destination FROM (SELECT "id","name","source",destination FROM transport.routestations inner join transport.route on route_id = transport.route.id WHERE station_id = $1) as b  INNER JOIN transport.schedule ON b."id" = transport.schedule.route_id where departure_time >= CURRENT_TIME;`
+
+	// show each route wich are active and having a bus departure time after the current time only
+	sqlStatement := `SELECT "name","source",destination FROM (SELECT "id","name","source",destination FROM transport.routestations inner join transport.route on route_id = transport.route.id WHERE station_id = $1 AND transport.route.status = 1) as b  INNER JOIN transport.schedule ON b."id" = transport.schedule.route_id where departure_time >= CURRENT_TIME;`
 	// sqlStatement := `SELECT name,
-// (select name from transport.station where transport.station.id = source LIMIT 1),
-// (select name from transport.station where transport.station.id = destination LIMIT 1) from (SELECT "name","source",destination FROM transport.routestations inner join transport.route on route_id = transport.route.id WHERE station_id = $1) as x;
-// `
+	// (select name from transport.station where transport.station.id = source LIMIT 1),
+	// (select name from transport.station where transport.station.id = destination LIMIT 1) from (SELECT "name","source",destination FROM transport.routestations inner join transport.route on route_id = transport.route.id WHERE station_id = $1) as x;
+	// `
 
 	result, err := db.Query(sqlStatement, id)
 	if err != nil {
 		return []model.UpcomingBus{}, err
 	}
-
+	if result == nil {
+		return nil,errors.New("sorry no data available currently")
+	}
+	defer result.Close()
+	
 	var busOutput []model.UpcomingBus
 	var dummy model.UpcomingBus
 	for result.Next() {
