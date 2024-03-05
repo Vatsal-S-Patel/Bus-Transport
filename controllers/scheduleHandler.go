@@ -16,7 +16,7 @@ func (c *Controller) CreateScheduleHandler(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 
@@ -24,16 +24,16 @@ func (c *Controller) CreateScheduleHandler(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	err = 	json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusOK,Message: "shedule is created"})
+	err = json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message: "shedule is created"})
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 
@@ -47,16 +47,16 @@ func (c *Controller) GetAllScheduleHandler(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
-	
+
 	w.WriteHeader(http.StatusOK)
-	err = 	json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusOK,Message: "schedule is fetched",Data: routes})
+	err = json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message: "schedule is fetched", Data: routes})
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 
@@ -69,16 +69,16 @@ func (c *Controller) DeleteScheduleHandler(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusOK,Message: "shedule is deleted"})
+	err = json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message: "shedule is deleted"})
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 
@@ -95,7 +95,7 @@ func (c *Controller) GetUpcomingBus(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 	// source, err := strconv.Atoi(variable["source"])
@@ -104,15 +104,15 @@ func (c *Controller) GetUpcomingBus(w http.ResponseWriter, r *http.Request) {
 	ouput, err := database.GetUpcomingBus(c.DB, variable["source"], variable["destination"])
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusOK,Message: "shedule is fetched",Data: ouput})
+	err = json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message: "shedule is fetched", Data: ouput})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 }

@@ -11,7 +11,7 @@ type BusStatus struct {
 	BusId            int     `json:"bus_id" sql:"bus_id"`
 	Lat              float64 `json:"lat" sql:"lat"`
 	Long             float64 `json:"long" sql:"long"`
-	LastUpdated      string `json:"last_updated" sql:"last_updated"`
+	LastUpdated      string  `json:"last_updated" sql:"last_updated"`
 	Traffic          int     `json:"traffic" sql:"traffic"`
 	Status           int     `json:"status" sql:"status"`
 	LastStationOrder int     `json:"last_station_order" sql:"last_station_order"`
@@ -39,7 +39,7 @@ type RouteStation struct {
 	StationOrder int `json:"station_order" sql:"station_order"`
 }
 
-type RouteStationMerged struct{
+type RouteStationMerged struct {
 	Route
 	RouteStation []RouteStation `json:"mapping"`
 }
@@ -59,18 +59,18 @@ type Station struct {
 }
 
 type UpcomingBus struct {
-	Bus_id		int		`json:"bus_id" sql:"bus_id"`
-	Name        string `json:"route_name" sql:"route_name"`
-	Source      string `json:"source" sql:"source"`
-	Destination string `json:"destination" sql:"destinaiton"`
-	DepartureTime string `json:"departure_time" sql:"departure_time"`
-	Lat			 float64 `json:"lat" sql:"lat"`
-	Long		float64 `json:"long" sql:"long"`
-	LastStationOrder int `json:"last_station_order" sql:"last_station_order"`
+	Bus_id           int     `json:"bus_id" sql:"bus_id"`
+	Name             string  `json:"route_name" sql:"route_name"`
+	Source           string  `json:"source" sql:"source"`
+	Destination      string  `json:"destination" sql:"destinaiton"`
+	DepartureTime    string  `json:"departure_time" sql:"departure_time"`
+	Lat              float64 `json:"lat" sql:"lat"`
+	Long             float64 `json:"long" sql:"long"`
+	LastStationOrder int     `json:"last_station_order" sql:"last_station_order"`
 }
 
-type Errorstruct struct{
-	Code 	int
+type OutputStruct struct {
+	Code    int
 	Message string
-	Data 	any
+	Data    any
 }
