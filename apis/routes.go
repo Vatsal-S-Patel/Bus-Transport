@@ -71,7 +71,7 @@ func corsMiddleware(next http.Handler) http.Handler {
 		w.Header().Set("Content-Type", "application/json")
 
 		// Allow preflight requests
-		if r.Method == "OPTIONS" {
+		if r.Method == "OPTIONS"{
 			w.WriteHeader(http.StatusOK)
 			return
 		}

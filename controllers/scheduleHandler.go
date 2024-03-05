@@ -16,7 +16,7 @@ func (c *Controller) CreateScheduleHandler(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.Errorstruct{Code:http.StatusInternalServerError,Message:err.Error()})
+		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 
@@ -24,7 +24,7 @@ func (c *Controller) CreateScheduleHandler(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.Errorstruct{Code:http.StatusInternalServerError,Message:err.Error()})
+		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 
@@ -32,10 +32,10 @@ func (c *Controller) CreateScheduleHandler(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.Errorstruct{Code:http.StatusInternalServerError,Message:err.Error()})
+		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
-	
+
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(string(rune(schedule.Id)) + "Inserted Successfully"))
 }
@@ -47,7 +47,7 @@ func (c *Controller) GetAllScheduleHandler(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.Errorstruct{Code:http.StatusInternalServerError,Message:err.Error()})
+		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 
@@ -55,7 +55,7 @@ func (c *Controller) GetAllScheduleHandler(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.Errorstruct{Code:http.StatusInternalServerError,Message:err.Error()})
+		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -69,7 +69,7 @@ func (c *Controller) DeleteScheduleHandler(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.Errorstruct{Code:http.StatusInternalServerError,Message:err.Error()})
+		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 
@@ -82,11 +82,13 @@ func (c *Controller) GetUpcomingBus(w http.ResponseWriter, r *http.Request) {
 	var variable map[string]int = map[string]int{}
 
 	err := json.NewDecoder(r.Body).Decode(&variable)
+	// variable := r.URL.Query()
 	log.Println(variable)
 	// variable := mux.Vars(r)
+
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.Errorstruct{Code:http.StatusInternalServerError,Message:err.Error()})
+		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 	// source, err := strconv.Atoi(variable["source"])
@@ -95,7 +97,7 @@ func (c *Controller) GetUpcomingBus(w http.ResponseWriter, r *http.Request) {
 	ouput, err := database.GetUpcomingBus(c.DB, variable["source"], variable["destination"])
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.Errorstruct{Code:http.StatusInternalServerError,Message:err.Error()})
+		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 
