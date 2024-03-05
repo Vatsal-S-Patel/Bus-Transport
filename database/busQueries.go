@@ -59,6 +59,13 @@ func DeleteBus(db *sql.DB, id string) error {
 	return nil
 }
 
+func UpdateLiveBus(db *sql.DB, data model.BusStatus) error {
+
+	sqlQuery := `INSERT INTO transport.busstatus (bus_id,lat,long,last_updated,traffic,status,last_station_order) VALUES ($1,$2,$3,$4,$5,$6,$7)`
+	_, err := db.Exec(sqlQuery, data.BusId, data.Lat, data.Long, data.LastUpdated, data.Status, data.Status, data.LastStationOrder)
+	return err
+}
+
 // func InsertAll(fil string, routes *[]model.Route, station *[]model.Station, schedule *[]model.Schedule, routeStation *[]model.RouteStation, driver *[]model.Driver, bus *[]model.Bus) {
 
 // 	file, err := os.Open(fil)

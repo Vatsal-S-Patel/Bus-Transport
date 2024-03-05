@@ -70,6 +70,27 @@ func (c *Controller) DeleteBusHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Bus Deleted"))
 }
 
+
+func (c *Controller) UpdateLiveBus(w http.ResponseWriter,r *http.Request){
+	var data model.BusStatus
+
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = database.UpdateLiveBus(c.DB,data)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+
+}
 // func (c *Controller) CreateAllHandler(w http.ResponseWriter, r *http.Request) {
 
 // 	var schedules []model.Schedule

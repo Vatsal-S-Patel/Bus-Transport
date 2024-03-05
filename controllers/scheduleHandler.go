@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -71,24 +70,26 @@ func (c *Controller) DeleteScheduleHandler(w http.ResponseWriter, r *http.Reques
 
 func (c *Controller) GetUpcomingBus(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	// var body map[string]string = map[string]string{}
+	var variable map[string]int = map[string]int{}
 
-	// err := json.NewDecoder(r.Body).Decode(&body)
-	variable := mux.Vars(r)
-	id, err := strconv.Atoi(variable["id"])
+	err := json.NewDecoder(r.Body).Decode(&variable)
+	log.Println(variable)
+	// variable := mux.Vars(r)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	}
+	// source, err := strconv.Atoi(variable["source"])
+	// var destinaiton = 0
+
+	ouput, err := database.GetUpcomingBus(c.DB, variable["source"], variable["destination"])
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
 		return
 	}
 
-	ouput, err := database.GetUpcomingBus(c.DB, id)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
-		return
-	}
-	
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(&ouput)
 }

@@ -26,6 +26,7 @@ func (app *App) InitializeRoutes() {
 	busRouter.HandleFunc("/", app.controller.CreateBusHandler).Methods("POST")
 	busRouter.HandleFunc("/", app.controller.GetAllBusHandler).Methods("GET")
 	busRouter.HandleFunc("/{id}", app.controller.DeleteBusHandler).Methods("POST")
+	busRouter.HandleFunc("/live/update",app.controller.UpdateLiveBus).Methods("POST")
 
 	driverRouter.HandleFunc("/", app.controller.CreateDriverHandler).Methods("POST")
 	driverRouter.HandleFunc("/", app.controller.GetAllDriverHandler).Methods("GET")
@@ -39,7 +40,7 @@ func (app *App) InitializeRoutes() {
 	routeStationRouter.HandleFunc("/", app.controller.GetAllRouteStationHandler).Methods("GET")
 
 	scheduleRouter.HandleFunc("/", app.controller.CreateScheduleHandler).Methods("POST")
-	scheduleRouter.HandleFunc("/GetUpcomingBus/{id}", app.controller.GetUpcomingBus).Methods("GET")
+	scheduleRouter.HandleFunc("/GetUpcomingBus", app.controller.GetUpcomingBus).Methods("POST")
 	scheduleRouter.HandleFunc("/", app.controller.GetAllScheduleHandler).Methods("GET")
 	scheduleRouter.HandleFunc("/{id}", app.controller.DeleteScheduleHandler).Methods("POST")
 
