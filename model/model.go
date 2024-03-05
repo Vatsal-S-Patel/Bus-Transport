@@ -39,6 +39,11 @@ type RouteStation struct {
 	StationOrder int `json:"station_order" sql:"station_order"`
 }
 
+type RouteStationMerged struct{
+	Route
+	RouteStation []RouteStation `json:"mapping"`
+}
+
 type Schedule struct {
 	Id            int    `json:"id" sql:"id"`
 	BusId         int    `json:"bus_id" sql:"bus_id"`
