@@ -14,44 +14,47 @@ func (c *Controller) CreateBusHandler(w http.ResponseWriter, r *http.Request) {
 	var bus model.Bus
 	err := json.NewDecoder(r.Body).Decode(&bus)
 	if err != nil {
-		log.Println(err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 
 	err = database.InsertBus(c.DB, bus)
 	if err != nil {
-		log.Println(err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 	log.Println("bus created ", bus)
-	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(bus)
 	if err != nil {
-		log.Println(err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
-
+	
+	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(bus.RegistrationNumber + "Inserted Successfully"))
 
 }
 
 func (c *Controller) GetAllBusHandler(w http.ResponseWriter, r *http.Request) {
 
-	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	buses, err := database.GetAllBus(c.DB)
 	if err != nil {
-		log.Println(err.Error())
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
-
+	
 	err = json.NewEncoder(w).Encode(buses)
 	if err != nil {
-		log.Println(err.Error())
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
+	w.WriteHeader(http.StatusOK)
 
 }
 
@@ -61,8 +64,8 @@ func (c *Controller) DeleteBusHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	err := database.DeleteBus(c.DB, mux.Vars(r)["id"])
 	if err != nil {
-		log.Println(err.Error())
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 
@@ -76,15 +79,15 @@ func (c *Controller) UpdateLiveBus(w http.ResponseWriter,r *http.Request){
 
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
-		log.Println(err.Error())
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 
 	err = database.UpdateLiveBus(c.DB,data)
 	if err != nil {
-		log.Println(err.Error())
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 

@@ -4,7 +4,6 @@ import (
 	"busproject/database"
 	"busproject/model"
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -14,20 +13,23 @@ func (c *Controller) CreateStationHandler(w http.ResponseWriter, r *http.Request
 	var station model.Station
 	err := json.NewDecoder(r.Body).Decode(&station)
 	if err != nil {
-		log.Println(err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.Errorstruct{Code:http.StatusInternalServerError,Message:err.Error()})
 		return
 	}
 
 	err = database.InsertStation(c.DB, station)
 	if err != nil {
-		log.Println(err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.Errorstruct{Code:http.StatusInternalServerError,Message:err.Error()})
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(station)
 	if err != nil {
-		log.Println(err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.Errorstruct{Code:http.StatusInternalServerError,Message:err.Error()})
 		return
 	}
 
@@ -35,20 +37,20 @@ func (c *Controller) CreateStationHandler(w http.ResponseWriter, r *http.Request
 }
 
 func (c *Controller) GetAllStationHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+	// w.Header().Set("Content-Type", "application/json")
 
 	routes, err := database.GetAllStation(c.DB)
 	if err != nil {
-		log.Println(err.Error())
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.Errorstruct{Code:http.StatusInternalServerError,Message:err.Error()})
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(routes)
 	if err != nil {
-		log.Println(err.Error())
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.Errorstruct{Code:http.StatusInternalServerError,Message:err.Error()})
 		return
 	}
 
@@ -58,8 +60,8 @@ func (c *Controller) DeleteStationHandler(w http.ResponseWriter, r *http.Request
 
 	err := database.DeleteStation(c.DB, mux.Vars(r)["id"])
 	if err != nil {
-		log.Println(err.Error())
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.Errorstruct{Code:http.StatusInternalServerError,Message:err.Error()})
 		return
 	}
 
@@ -72,16 +74,16 @@ func (c *Controller) SelectRouteFromSourceOrDestination(w http.ResponseWriter, r
 
 	routeStations, err := database.SelectRouteFromSourceOrDestination(c.DB, mux.Vars(r)["id"])
 	if err != nil {
-		log.Println(err.Error())
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.Errorstruct{Code:http.StatusInternalServerError,Message:err.Error()})
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(routeStations)
 	if err != nil {
-		log.Println(err.Error())
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.Errorstruct{Code:http.StatusInternalServerError,Message:err.Error()})
 		return
 	}
 

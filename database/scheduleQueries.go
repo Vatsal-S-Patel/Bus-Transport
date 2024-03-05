@@ -4,6 +4,7 @@ import (
 	"busproject/model"
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 	"strconv"
 )
@@ -62,7 +63,7 @@ func DeleteSchedule(db *sql.DB, id string) error {
 }
 
 func GetUpcomingBus(db *sql.DB, source, destination int) ([]model.UpcomingBus, error) {
-	// fmt.Println(source, destination)
+	fmt.Println(source, destination)
 	// if any of source or destination is 0 means they are not provided by client
 	if source == 0 {
 		return nil, errors.New("source need to be specified")

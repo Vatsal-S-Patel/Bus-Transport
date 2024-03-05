@@ -68,3 +68,8 @@ type UpcomingBus struct {
 	Long		float64 `json:"long" sql:"long"`
 	LastStationOrder int `json:"last_station_order" sql:"last_station_order"`
 }
+
+type Errorstruct struct{
+	Code 	int
+	Message string
+}
