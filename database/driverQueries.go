@@ -16,6 +16,7 @@ func InsertDriver(db *sql.DB, driver model.Driver) error {
 	}
 
 	log.Println("Driver inserted successfully")
+	
 	return nil
 }
 

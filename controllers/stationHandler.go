@@ -26,14 +26,12 @@ func (c *Controller) CreateStationHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(station)
+	err = json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusOK,Message: "station is created"})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(model.Errorstruct{Code:http.StatusInternalServerError,Message:err.Error()})
 		return
 	}
-
-	w.Write([]byte(station.Name + "Inserted Successfully"))
 }
 
 func (c *Controller) GetAllStationHandler(w http.ResponseWriter, r *http.Request) {
@@ -47,7 +45,7 @@ func (c *Controller) GetAllStationHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(routes)
+	err = json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusOK,Message: "station is fetched",Data: routes})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(model.Errorstruct{Code:http.StatusInternalServerError,Message:err.Error()})
@@ -66,7 +64,12 @@ func (c *Controller) DeleteStationHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Station Deleted"))
+	err = json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusOK,Message: "station is deleted"})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.Errorstruct{Code:http.StatusInternalServerError,Message:err.Error()})
+		return
+	}
 }
 
 func (c *Controller) SelectRouteFromSourceOrDestination(w http.ResponseWriter, r *http.Request) {
@@ -80,7 +83,7 @@ func (c *Controller) SelectRouteFromSourceOrDestination(w http.ResponseWriter, r
 	}
 
 	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(routeStations)
+	err = json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusOK,Message: "station is fetched",Data: routeStations})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(model.Errorstruct{Code:http.StatusInternalServerError,Message:err.Error()})

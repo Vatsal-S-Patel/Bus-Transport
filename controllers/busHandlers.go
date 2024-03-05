@@ -34,7 +34,7 @@ func (c *Controller) CreateBusHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(bus.RegistrationNumber + "Inserted Successfully"))
+	json.NewEncoder(w).Encode(model.Errorstruct{Code:http.StatusOK,Message:"bus Inserted Successfully"})
 
 }
 
@@ -48,14 +48,14 @@ func (c *Controller) GetAllBusHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	err = json.NewEncoder(w).Encode(buses)
+	// err = json.NewEncoder(w).Encode(buses)
+	w.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusOK,Message: "bus is fetched",Data: buses})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
-	w.WriteHeader(http.StatusOK)
-
 }
 
 func (c *Controller) DeleteBusHandler(w http.ResponseWriter, r *http.Request) {
@@ -70,7 +70,12 @@ func (c *Controller) DeleteBusHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Bus Deleted"))
+	err = json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusOK,Message: "bus deleted"})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		return
+	}
 }
 
 
@@ -91,7 +96,12 @@ func (c *Controller) UpdateLiveBus(w http.ResponseWriter,r *http.Request){
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusOK,Message: "bus updated"})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		return
+	}
 
 }
 // func (c *Controller) CreateAllHandler(w http.ResponseWriter, r *http.Request) {

@@ -109,7 +109,7 @@ func GetUpcomingBus(db *sql.DB, source, destination int) ([]model.UpcomingBus, e
 
 	// log.Println("data is fetched")
 	if len(busOutput) == 0 {
-		return nil, errors.New("Sorry no bus available")
+		return nil, errors.New("sorry no bus available")
 	}
 	return busOutput, nil
 }

@@ -72,4 +72,5 @@ type UpcomingBus struct {
 type Errorstruct struct{
 	Code 	int
 	Message string
+	Data 	any
 }

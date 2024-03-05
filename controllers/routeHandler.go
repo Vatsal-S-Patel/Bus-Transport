@@ -39,7 +39,12 @@ func (c *Controller) CreateRouteHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(routeWithStationOrder.Name + "Inserted Successfully"))
+	err = json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusOK,Message: "route is created"})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		return
+	}
 
 }
 
@@ -54,7 +59,7 @@ func (c *Controller) GetAllRouteHandler(w http.ResponseWriter, r *http.Request) 
 
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(routes)
+	err = json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusOK,Message: "route is deleted",Data: routes})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
@@ -73,5 +78,10 @@ func (c *Controller) DeleteRouteHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Route Deleted"))
+	err = json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusOK,Message: "route is deleted"})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		return
+	}
 }

@@ -26,14 +26,12 @@ func (c *Controller) CreateDriverHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(driver)
+	err = json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusOK,Message: driver.Name + "driver created"})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
-
-	w.Write([]byte(driver.Name + "Inserted Successfully"))
 
 }
 
@@ -48,7 +46,7 @@ func (c *Controller) GetAllDriverHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(drivers)
+	err = json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusOK,Message: "driver is fetched",Data: drivers})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
@@ -67,5 +65,10 @@ func (c *Controller) DeleteDriverHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Driver Deleted"))
+	err = json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusOK,Message: "driver is deleted"})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		return
+	}
 }

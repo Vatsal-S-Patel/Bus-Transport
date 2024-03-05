@@ -28,7 +28,8 @@ func (c *Controller) CreateScheduleHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	err = json.NewEncoder(w).Encode(schedule)
+	w.WriteHeader(http.StatusOK)
+	err = 	json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusOK,Message: "shedule is created"})
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
@@ -36,8 +37,7 @@ func (c *Controller) CreateScheduleHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(string(rune(schedule.Id)) + "Inserted Successfully"))
+	// w.Write([]byte(string(rune(schedule.Id)) + "Inserted Successfully"))
 }
 
 func (c *Controller) GetAllScheduleHandler(w http.ResponseWriter, r *http.Request) {
@@ -50,15 +50,15 @@ func (c *Controller) GetAllScheduleHandler(w http.ResponseWriter, r *http.Reques
 		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
-
-	err = json.NewEncoder(w).Encode(routes)
+	
+	w.WriteHeader(http.StatusOK)
+	err = 	json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusOK,Message: "schedule is fetched",Data: routes})
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
-	w.WriteHeader(http.StatusOK)
 
 }
 
@@ -74,7 +74,14 @@ func (c *Controller) DeleteScheduleHandler(w http.ResponseWriter, r *http.Reques
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Schedule Deleted"))
+	err = json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusOK,Message: "shedule is deleted"})
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		return
+	}
+
 }
 
 func (c *Controller) GetUpcomingBus(w http.ResponseWriter, r *http.Request) {
@@ -102,5 +109,10 @@ func (c *Controller) GetUpcomingBus(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(&ouput)
+	err = json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusOK,Message: "shedule is fetched",Data: ouput})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.Errorstruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		return
+	}
 }
