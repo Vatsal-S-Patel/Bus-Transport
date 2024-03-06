@@ -26,7 +26,7 @@ func (c *Controller) CreateRouteStationHandler(w http.ResponseWriter, r *http.Re
 	}
 
 	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(routeStation)
+	err = json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message: "route station is created"})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
@@ -48,7 +48,7 @@ func (c *Controller) GetAllRouteStationHandler(w http.ResponseWriter, r *http.Re
 	}
 
 	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(routeStations)
+	err = json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message: "route station is fetched", Data: routeStations})
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusBadRequest)
