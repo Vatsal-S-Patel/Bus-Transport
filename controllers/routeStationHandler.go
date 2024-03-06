@@ -50,7 +50,6 @@ func (c *Controller) GetAllRouteStationHandler(w http.ResponseWriter, r *http.Re
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
 }
 
 func (c *Controller) CreateMappingHandler(mapping model.RouteStationMerged, mappingId int) int {
