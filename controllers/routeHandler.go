@@ -16,22 +16,22 @@ func (c *Controller) CreateRouteHandler(w http.ResponseWriter, r *http.Request) 
 	log.Println(r.Body)
 	err := json.NewDecoder(r.Body).Decode(&routeWithStationOrder)
 	if err != nil {
-		log.Println(err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 
 	err = database.InsertRoute(c.DB, routeWithStationOrder.Route)
 	if err != nil {
-		log.Println(err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 
 	mappingStatusCode := c.CreateMappingHandler(routeWithStationOrder, routeWithStationOrder.Id)
 	if mappingStatusCode != http.StatusOK {
-		w.WriteHeader(mappingStatusCode)
-		w.Write([]byte(routeWithStationOrder.Name + "Something Bad Happened"))
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: "internal server at 34 in routehandler.go"})
 		return
 	}
 
@@ -47,7 +47,13 @@ func (c *Controller) CreateRouteHandler(w http.ResponseWriter, r *http.Request) 
 	// }
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(routeWithStationOrder.Name + "Inserted Successfully"))
+	err = json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message:"routes is created"})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		return
+	}
+		// return
 }
 
 func (c *Controller) GetAllRouteHandler(w http.ResponseWriter, r *http.Request) {
@@ -57,17 +63,19 @@ func (c *Controller) GetAllRouteHandler(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	err = json.NewEncoder(w).Encode(routes)
-	if err != nil {
-		log.Println(err.Error())
-		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message:err.Error()})
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK,Message: "route is fetched",Data: routes})
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(http.StatusBadRequest)
+	json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message:err.Error()})
+		return
+	}
+
 }
 
 func (c *Controller) DeleteRouteHandler(w http.ResponseWriter, r *http.Request) {
@@ -76,9 +84,10 @@ func (c *Controller) DeleteRouteHandler(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusBadRequest)
+	json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message:err.Error()})
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Route Deleted"))
+	json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message:"routes is deleted"})
 }
