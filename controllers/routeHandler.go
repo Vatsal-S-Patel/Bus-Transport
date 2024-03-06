@@ -35,11 +35,23 @@ func (c *Controller) CreateRouteHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	// for _, v := range routeWithStationOrder.RouteStationArray {
+	// 	log.Println("inserting staiton with ", routeWithStationOrder.Id, " name ", v.StationId, " with order ", v.StationOrder)
+	// 	err := database.InsertRouteStation(c.DB, v)
+
+	// 	if err != nil {
+	// 		log.Println(err.Error())
+	// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+	// 		return
+	// 	}
+	// }
+
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(routeWithStationOrder.Name + "Inserted Successfully"))
 }
 
 func (c *Controller) GetAllRouteHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 
 	routes, err := database.GetAllRoute(c.DB)
 	if err != nil {
@@ -48,8 +60,6 @@ func (c *Controller) GetAllRouteHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(routes)
 	if err != nil {
 		log.Println(err.Error())
@@ -57,6 +67,7 @@ func (c *Controller) GetAllRouteHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
 }
 
 func (c *Controller) DeleteRouteHandler(w http.ResponseWriter, r *http.Request) {
