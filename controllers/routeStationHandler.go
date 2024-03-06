@@ -33,7 +33,7 @@ func (c *Controller) CreateRouteStationHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("RouteStation Inserted Successfully"))
 }
 
