@@ -90,7 +90,7 @@ func (c *Controller) GetUpcomingBus(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&variable)
 	// variable := r.URL.Query()
-	log.Println(variable)
+	// log.Println(variable)
 	// variable := mux.Vars(r)
 
 	if err != nil {
@@ -102,7 +102,16 @@ func (c *Controller) GetUpcomingBus(w http.ResponseWriter, r *http.Request) {
 	// var destinaiton = 0
 
 	ouput, err := database.GetUpcomingBus(c.DB, variable["source"], variable["destination"])
-	if err != nil {
+	if err != nil && err.Error() == "sorry no bus available" {
+		w.WriteHeader(http.StatusNotFound)
+		err = json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusNotFound, Message: "sorry no bus available"})
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
+			return
+		}
+		return
+	} else if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return

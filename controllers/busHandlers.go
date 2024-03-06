@@ -4,7 +4,6 @@ import (
 	"busproject/database"
 	"busproject/model"
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -25,16 +24,16 @@ func (c *Controller) CreateBusHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
-	log.Println("bus created ", bus)
-	err = json.NewEncoder(w).Encode(bus)
+	// log.Println("bus created ", bus)
+	w.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message: "bus Inserted Successfully"})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message: "bus Inserted Successfully"})
+	// json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message: "bus Inserted Successfully"})
 
 }
 
@@ -94,7 +93,7 @@ func (c *Controller) UpdateLiveBus(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
-
+	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message: "bus updated"})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

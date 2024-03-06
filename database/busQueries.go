@@ -15,7 +15,7 @@ func InsertBus(db *sql.DB, bus model.Bus) error {
 		return err
 	}
 
-	log.Println("Bus inserted successfully")
+	// log.Println("Bus inserted successfully")
 	return nil
 }
 
@@ -55,7 +55,7 @@ func DeleteBus(db *sql.DB, id string) error {
 		return err
 	}
 
-	log.Println("Bus Deleted successfully")
+	// log.Println("Bus Deleted successfully")
 	return nil
 }
 

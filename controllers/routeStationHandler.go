@@ -48,7 +48,7 @@ func (c *Controller) GetAllRouteStationHandler(w http.ResponseWriter, r *http.Re
 	err = json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK,Message: "route station is fetched",Data: routeStations})
 	if err != nil {
 		log.Println(err.Error())
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 }
@@ -56,7 +56,7 @@ func (c *Controller) GetAllRouteStationHandler(w http.ResponseWriter, r *http.Re
 func (c *Controller) CreateMappingHandler(mapping model.RouteStationMerged, mappingId int) int {
 
 	if len(mapping.RouteStationArray) == 0 {
-		return http.StatusBadRequest
+		return http.StatusInternalServerError
 	}
 
 	insertQuery := "INSERT INTO transport.routestations (route_id, station_id, station_order) VALUES "
@@ -68,9 +68,9 @@ func (c *Controller) CreateMappingHandler(mapping model.RouteStationMerged, mapp
 	err := database.InsertAllRouteStation(c.DB, insertQuery)
 	if err != nil {
 		log.Println(err.Error())
-		return http.StatusBadRequest
+		return http.StatusInternalServerError
 	}
 
-	log.Println("Mapping Successful")
+	// log.Println("Mapping Successful")
 	return http.StatusOK
 }

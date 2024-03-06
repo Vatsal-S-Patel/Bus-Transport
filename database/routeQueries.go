@@ -15,7 +15,7 @@ func InsertRoute(db *sql.DB, route model.Route) error {
 		return err
 	}
 
-	log.Println("Route inserted successfully")
+	// log.Println("Route inserted successfully")
 	return nil
 }
 
@@ -70,6 +70,6 @@ func DeleteRoute(db *sql.DB, id string) error {
 		return err
 	}
 
-	log.Println("Route Deleted successfully")
+	// log.Println("Route Deleted successfully")
 	return nil
 }

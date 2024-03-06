@@ -14,19 +14,19 @@ func InsertRouteStation(db *sql.DB, routeStation model.RouteStation) error {
 		return err
 	}
 
-	log.Println("RouteStation inserted successfully")
+	// log.Println("RouteStation inserted successfully")
 	return nil
 }
 
 func InsertAllRouteStation(db *sql.DB, sqlStatement string) error {
 
-	log.Println(sqlStatement)
+	// log.Println(sqlStatement)
 	_, err := db.Exec(sqlStatement[:len(sqlStatement)-1] + ";")
 	if err != nil {
 		return err
 	}
 
-	log.Println("All RouteStation inserted successfully")
+	// log.Println("All RouteStation inserted successfully")
 	return nil
 }
 
