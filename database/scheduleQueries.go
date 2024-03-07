@@ -4,6 +4,7 @@ import (
 	"busproject/model"
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 	"strconv"
 )
@@ -62,7 +63,7 @@ func DeleteSchedule(db *sql.DB, id string) error {
 }
 
 func GetUpcomingBus(db *sql.DB, source, destination int) ([]model.UpcomingBus, error) {
-	// fmt.Println(source, destination)
+	fmt.Println(source, destination)
 	// if any of source or destination is 0 means they are not provided by client
 	if source == 0 {
 		return nil, errors.New("source need to be specified")
@@ -74,7 +75,7 @@ func GetUpcomingBus(db *sql.DB, source, destination int) ([]model.UpcomingBus, e
 		sqlStatement = `SELECT f.bus_id,route_name,source,destination,departure_time,b.lat,b.long,b.last_station_order FROM (SELECT bus_id,route_name,source,destination,departure_time FROM bustransportsystem WHERE station_id = $1 and status = 1 AND departure_time >= CURRENT_TIME) AS f LEFT JOIN transport.busstatus as b ON f.bus_id = b.bus_id WHERE b.status = 1 OR b.status IS NULL ORDER BY departure_time ASC;`
 		result, err = db.Query(sqlStatement, source)
 	} else {
-		sqlStatement = `SELECT o.bus_id,route_name,source,destination,departure_time,b.lat,b.long,b.last_station_order FROM (SELECT s.bus_id,s.route_name,s.source,s.destination,s.departure_time FROM (SELECT * FROM bustransportsystem WHERE station_id = $1 and status = 1) as f INNER JOIN (SELECT * FROM bustransportsystem WHERE station_id = $2 and status = 1) as s ON f.route_id = s.route_id WHERE f.bus_id = s.bus_id and f.source = $1 and f.destination = $2) as o LEFT JOIN transport.busstatus as b ON o.bus_id = b.bus_id WHERE b.status = 1 OR b.status IS NULL AND departure_time >= CURRENT_TIME ORDER BY departure_time ASC;`
+		sqlStatement = `SELECT o.bus_id,route_name,source,destination,departure_time,b.lat,b.long,b.last_station_order FROM (SELECT s.bus_id,s.route_name,s.source,s.destination,s.departure_time FROM (SELECT * FROM bustransportsystem WHERE station_id = $1 and status = 1) as f INNER JOIN (SELECT * FROM bustransportsystem WHERE station_id = $2 and status = 1) as s ON f.route_id = s.route_id WHERE f.bus_id = s.bus_id AND f.station_order < s.station_order) as o LEFT JOIN transport.busstatus as b ON o.bus_id = b.bus_id WHERE b.status = 1 OR b.status IS NULL AND departure_time >= CURRENT_TIME ORDER BY departure_time ASC;`
 		result, err = db.Query(sqlStatement, source, destination)
 	}
 	// sqlStatement := `SELECT "name","source",destination FROM (SELECT route_id FROM transport.routestations INNER JOIN transport.station ON station_id = transport.station.id WHERE transport.station.id = $1 ) as r INNER JOIN transport.route ON transport.route.id = r.route_id WHERE status = 1;`

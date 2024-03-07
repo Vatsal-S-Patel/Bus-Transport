@@ -62,7 +62,7 @@ func DeleteBus(db *sql.DB, id string) error {
 // this function will only be invoked by socket only...
 func UpdateLiveBus(db *sql.DB, data model.BusStatus) error {
 
-	sqlQuery := `UPDATE transport.busstatus SET lat=$2,long=$3,last_updated=$4,traffic=$5,status=$6,last_station_order=$7 WHERE bus_id = $1`
+	sqlQuery := `INSERT INTO transport.busstatus(bus_id,lat,long,last_updated,traffic,status,last_station_order) VALUES($1,$2,$3,$4,$5,$6,$7)`
 	_, err := db.Exec(sqlQuery, data.BusId, data.Lat, data.Long, data.LastUpdated, data.Status, data.Status, data.LastStationOrder)
 	return err
 }
