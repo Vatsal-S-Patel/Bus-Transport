@@ -2,6 +2,7 @@ package apis
 
 import (
 	"busproject/configs"
+	"busproject/socket"
 	"log"
 	"net/http"
 
@@ -62,7 +63,10 @@ func (app *App) InitializeRoutes() {
 		log.Println(err.Error())
 		return
 	}
-
+	server := socket.InitSocket()
+	r.Handle("/socket.io/", server)
+	defer server.Close()
+	r.Handle("/", http.FileServer(http.Dir("./asset")))
 	log.Println("INFO: Server started on PORT:" + server_port)
 	http.ListenAndServe(":"+server_port, r)
 }
@@ -71,8 +75,10 @@ func corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Set CORS headers
 		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Access-Control-Allow-Headers", "Authorization")
+		w.Header().Set("Access-Control-Allow-Credential", "True")
 		w.Header().Set("Content-Type", "application/json")
 
 		// Allow preflight requests
