@@ -11,7 +11,7 @@ func InsertStation(db *sql.DB, station model.Station) error {
 	sqlStatement := `INSERT INTO transport.station (id, name, lat, long) VALUES ($1, $2, $3, $4)`
 	// id,err := strconv.Atoi(station.Id)
 	// if err != nil {
-		// return err
+	// return err
 	// }
 	_, err := db.Exec(sqlStatement, station.Id, station.Name, station.Lat, station.Long)
 	if err != nil {

@@ -47,13 +47,13 @@ func (c *Controller) CreateRouteHandler(w http.ResponseWriter, r *http.Request) 
 	// }
 
 	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message:"routes is created"})
+	err = json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message: "routes is created"})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
 		return
 	}
-		// return
+	// return
 }
 
 func (c *Controller) GetAllRouteHandler(w http.ResponseWriter, r *http.Request) {
@@ -63,16 +63,16 @@ func (c *Controller) GetAllRouteHandler(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message:err.Error()})
+		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message: err.Error()})
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK,Message: "route is fetched",Data: routes})
+	err = json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message: "route is fetched", Data: routes})
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusBadRequest)
-	json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message:err.Error()})
+		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message: err.Error()})
 		return
 	}
 
@@ -84,10 +84,10 @@ func (c *Controller) DeleteRouteHandler(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusBadRequest)
-	json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message:err.Error()})
+		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message: err.Error()})
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message:"routes is deleted"})
+	json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message: "routes is deleted"})
 }
