@@ -14,6 +14,8 @@ func (app *App) InitializeRoutes() {
 
 	r.Use(corsMiddleware)
 
+	// socket.GetLocation()
+
 	apiRoute := r.PathPrefix("/api").Subrouter()
 
 	busRouter := apiRoute.PathPrefix("/bus").Subrouter()
@@ -22,6 +24,7 @@ func (app *App) InitializeRoutes() {
 	routeStationRouter := apiRoute.PathPrefix("/routeStation").Subrouter()
 	scheduleRouter := apiRoute.PathPrefix("/schedule").Subrouter()
 	stationRouter := apiRoute.PathPrefix("/station").Subrouter()
+	// socketRouter := apiRoute.PathPrefix("/socket").Subrouter()
 
 	busRouter.HandleFunc("/", app.controller.CreateBusHandler).Methods("POST")
 	busRouter.HandleFunc("/", app.controller.GetAllBusHandler).Methods("GET")
@@ -49,6 +52,8 @@ func (app *App) InitializeRoutes() {
 	stationRouter.HandleFunc("/{id}", app.controller.DeleteStationHandler).Methods("POST")
 	// stationRouter.HandleFunc("/routeFromStation/{id}", app.controller.SelectRouteFromSourceOrDestination).Methods("GET")
 
+	// socketRouter.HandleFunc("/buslocation", socket.GetLocation).Methods("POST")
+
 	// For All Entries from CSVs
 	// busRouter.HandleFunc("/all", app.controller.CreateAllHandler).Methods("POST")
 
@@ -71,7 +76,7 @@ func corsMiddleware(next http.Handler) http.Handler {
 		w.Header().Set("Content-Type", "application/json")
 
 		// Allow preflight requests
-		if r.Method == "OPTIONS"{
+		if r.Method == "OPTIONS" {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
