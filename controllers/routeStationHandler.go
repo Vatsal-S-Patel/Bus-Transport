@@ -13,47 +13,28 @@ func (c *Controller) CreateRouteStationHandler(w http.ResponseWriter, r *http.Re
 	var routeStation model.RouteStation
 	err := json.NewDecoder(r.Body).Decode(&routeStation)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		OutputToClient(w,http.StatusInternalServerError,err.Error(),nil)
 		return
 	}
 
 	err = database.InsertRouteStation(c.DB, routeStation)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		OutputToClient(w,http.StatusInternalServerError,err.Error(),nil)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message: "route station is created"})
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("RouteStation Inserted Successfully"))
+	OutputToClient(w,http.StatusOK,"route station is created",nil)
 }
 
 func (c *Controller) GetAllRouteStationHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 
 	routeStations, err := database.GetAllRouteStation(c.DB)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		OutputToClient(w,http.StatusInternalServerError,err.Error(),nil)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message: "route station is fetched", Data: routeStations})
-	if err != nil {
-		log.Println(err.Error())
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+	OutputToClient(w,http.StatusOK,"route station is fetched",routeStations)
 }
 
 func (c *Controller) CreateMappingHandler(mapping model.RouteStationMerged, mappingId int) int {
