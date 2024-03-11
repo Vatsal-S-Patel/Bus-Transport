@@ -76,9 +76,8 @@ func corsMiddleware(next http.Handler) http.Handler {
 		// Set CORS headers
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		w.Header().Set("Access-Control-Allow-Headers", "Authorization")
-		w.Header().Set("Access-Control-Allow-Credential", "True")
+		w.Header().Set("Access-Control-Allow-Headers", "content-type")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		w.Header().Set("Content-Type", "application/json")
 
 		// Allow preflight requests

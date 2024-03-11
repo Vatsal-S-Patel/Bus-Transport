@@ -31,12 +31,13 @@ func InitSocket() *socketio.Server {
 			log.Println(err)
 			s.Emit("err", err.Error())
 		}
-		server.BroadcastToNamespace("/", "update", msg)
+		server.BroadcastToNamespace("/", "update", data)
 	})
 
 	server.OnEvent("/", "bye", func(s socketio.Conn) string {
+		fmt.Println("got bye from client")
 		last := s.Context().(string)
-		s.Emit("bye", last)
+		s.Emit("bye", "bye bye")
 		s.Close()
 		return last
 	})
