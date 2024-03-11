@@ -15,7 +15,7 @@ func InsertDriver(db *sql.DB, driver model.Driver) error {
 		return err
 	}
 
-	log.Println("Driver inserted successfully")
+	// log.Println("Driver inserted successfully")
 	
 	return nil
 }
@@ -59,6 +59,6 @@ func DeleteDriver(db *sql.DB, id string) error {
 		return err
 	}
 
-	log.Println("Driver Deleted successfully")
+	// log.Println("Driver Deleted successfully")
 	return nil
 }

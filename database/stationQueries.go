@@ -18,7 +18,7 @@ func InsertStation(db *sql.DB, station model.Station) error {
 		return err
 	}
 
-	log.Println("Station inserted successfully")
+	// log.Println("Station inserted successfully")
 	return nil
 }
 
@@ -59,7 +59,7 @@ func DeleteStation(db *sql.DB, id string) error {
 		return err
 	}
 
-	log.Println("Station Deleted successfully")
+	// log.Println("Station Deleted successfully")
 	return nil
 }
 

@@ -4,78 +4,60 @@ import (
 	"busproject/database"
 	"busproject/model"
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
 
+// inserts a bus into the database and a new bus will be created
+//TOD: if a bus is added a entry to bus status table need to be inserted with status unassigned
 func (c *Controller) CreateBusHandler(w http.ResponseWriter, r *http.Request) {
 	var bus model.Bus
+
 	err := json.NewDecoder(r.Body).Decode(&bus)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		OutputToClient(w,http.StatusInternalServerError,err.Error(),nil)
 		return
 	}
 
 	err = database.InsertBus(c.DB, bus)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
-		return
-	}
-	log.Println("bus created ", bus)
-	err = json.NewEncoder(w).Encode(bus)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		OutputToClient(w,http.StatusInternalServerError,err.Error(),nil)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message: "bus Inserted Successfully"})
-
+	OutputToClient(w,http.StatusOK,"bus inserted successfull",nil)
 }
 
+// return each bus currently in table for update and delete purpose
 func (c *Controller) GetAllBusHandler(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Content-Type", "application/json")
 	buses, err := database.GetAllBus(c.DB)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		OutputToClient(w,http.StatusInternalServerError,err.Error(),nil)
 		return
 	}
 
-	// err = json.NewEncoder(w).Encode(buses)
-	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message: "bus is fetched", Data: buses})
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
-		return
-	}
+	OutputToClient(w,http.StatusOK,"bus is fetched",buses)
 }
 
 func (c *Controller) DeleteBusHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	err := database.DeleteBus(c.DB, mux.Vars(r)["id"])
+	var id string
+
+	if v,ok := mux.Vars(r)["id"]; !ok {
+		OutputToClient(w,http.StatusBadRequest,"please specify id of bus to delete",nil)
+		return
+	}else{
+		id = v
+	}
+
+	err := database.DeleteBus(c.DB,id)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		OutputToClient(w,http.StatusInternalServerError,err.Error(),nil)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message: "bus deleted"})
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
-		return
-	}
+	OutputToClient(w,http.StatusOK,"bus deleted",nil)
 }
 
 func (c *Controller) UpdateLiveBus(w http.ResponseWriter, r *http.Request) {
@@ -83,25 +65,17 @@ func (c *Controller) UpdateLiveBus(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		OutputToClient(w,http.StatusInternalServerError,err.Error(),nil)
 		return
 	}
 
 	err = database.UpdateLiveBus(c.DB, data)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
+		OutputToClient(w,http.StatusInternalServerError,err.Error(),nil)
 		return
 	}
 
-	err = json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusOK, Message: "bus updated"})
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(model.OutputStruct{Code: http.StatusInternalServerError, Message: err.Error()})
-		return
-	}
-
+	OutputToClient(w,http.StatusOK,"bus updated",nil)
 }
 
 // func (c *Controller) CreateAllHandler(w http.ResponseWriter, r *http.Request) {

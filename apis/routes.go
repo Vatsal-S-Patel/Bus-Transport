@@ -2,6 +2,7 @@ package apis
 
 import (
 	"busproject/configs"
+	"busproject/socket"
 	"log"
 	"net/http"
 
@@ -14,6 +15,8 @@ func (app *App) InitializeRoutes() {
 
 	r.Use(corsMiddleware)
 
+	// socket.GetLocation()
+
 	apiRoute := r.PathPrefix("/api").Subrouter()
 
 	busRouter := apiRoute.PathPrefix("/bus").Subrouter()
@@ -22,6 +25,7 @@ func (app *App) InitializeRoutes() {
 	routeStationRouter := apiRoute.PathPrefix("/routeStation").Subrouter()
 	scheduleRouter := apiRoute.PathPrefix("/schedule").Subrouter()
 	stationRouter := apiRoute.PathPrefix("/station").Subrouter()
+	// socketRouter := apiRoute.PathPrefix("/socket").Subrouter()
 
 	busRouter.HandleFunc("/", app.controller.CreateBusHandler).Methods("POST")
 	busRouter.HandleFunc("/", app.controller.GetAllBusHandler).Methods("GET")
@@ -49,6 +53,8 @@ func (app *App) InitializeRoutes() {
 	stationRouter.HandleFunc("/{id}", app.controller.DeleteStationHandler).Methods("POST")
 	// stationRouter.HandleFunc("/routeFromStation/{id}", app.controller.SelectRouteFromSourceOrDestination).Methods("GET")
 
+	// socketRouter.HandleFunc("/buslocation", socket.GetLocation).Methods("POST")
+
 	// For All Entries from CSVs
 	// busRouter.HandleFunc("/all", app.controller.CreateAllHandler).Methods("POST")
 
@@ -57,7 +63,10 @@ func (app *App) InitializeRoutes() {
 		log.Println(err.Error())
 		return
 	}
-
+	server := socket.InitSocket()
+	r.Handle("/socket.io/", server)
+	defer server.Close()
+	r.Handle("/", http.FileServer(http.Dir("./asset")))
 	log.Println("INFO: Server started on PORT:" + server_port)
 	http.ListenAndServe(":"+server_port, r)
 }
@@ -66,12 +75,13 @@ func corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Set CORS headers
 		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "content-type")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		w.Header().Set("Content-Type", "application/json")
 
 		// Allow preflight requests
-		if r.Method == "OPTIONS"{
+		if r.Method == "OPTIONS" {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
