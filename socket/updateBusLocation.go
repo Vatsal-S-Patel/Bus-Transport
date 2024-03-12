@@ -9,11 +9,6 @@ import (
 	socketio "github.com/googollee/go-socket.io"
 )
 
-// Easier to get running with CORS. Thanks for help @Vindexus and @erkie
-// var allowOriginFunc = func(r *http.Request) bool {
-// 	return true
-// }
-
 func InitSocket() *socketio.Server {
 	server := socketio.NewServer(nil)
 
@@ -23,7 +18,7 @@ func InitSocket() *socketio.Server {
 		return nil
 	})
 
-	server.OnEvent("/", "update", func(s socketio.Conn, msg string) {
+	server.OnEvent("/", "update", func(s socketio.Conn, msg string, routeid int) {
 		fmt.Println("notice:", msg)
 		var data = model.BusStatus{}
 		err := json.Unmarshal([]byte(msg), &data)
@@ -31,7 +26,19 @@ func InitSocket() *socketio.Server {
 			log.Println(err)
 			s.Emit("err", err.Error())
 		}
-		server.BroadcastToNamespace("/", "update", data)
+		server.BroadcastToRoom("/", fmt.Sprintf("%d", routeid), "update", data)
+
+	})
+
+	server.OnEvent("/", "sourceSelected", func(s socketio.Conn, routeId []int) {
+		fmt.Println(routeId)
+		// var routeId []int
+		// json.Unmarshal([]byte(input),&routeId)
+		s.LeaveAll()
+		for _, v := range routeId {
+			s.Join(fmt.Sprintf("%d", v))
+		}
+		s.Emit("roomJoined", fmt.Sprint("{code:200,message:'you joined the rooms',","ids:,",s.Rooms(),"}"))
 	})
 
 	server.OnEvent("/", "bye", func(s socketio.Conn) string {
@@ -55,10 +62,6 @@ func InitSocket() *socketio.Server {
 		server.Serve()
 	}()
 
-	// http.Handle("/socket.io/", server)
-	// http.Handle("/", http.FileServer(http.Dir("./asset")))
-	// log.Println("Serving at localhost:8000...")
-	// log.Fatal(http.ListenAndServe(":8000", nil))
 	return server
 }
 
