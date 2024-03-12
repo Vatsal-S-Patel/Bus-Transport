@@ -19,7 +19,7 @@ func InitSocket() *socketio.Server {
 	})
 
 	server.OnEvent("/", "update", func(s socketio.Conn, msg string, routeid int) {
-		fmt.Println("notice:", msg)
+		// fmt.Println("notice:", msg)
 		var data = model.BusStatus{}
 		err := json.Unmarshal([]byte(msg), &data)
 		if err != nil {
@@ -27,7 +27,13 @@ func InitSocket() *socketio.Server {
 			s.Emit("err", err.Error())
 		}
 		server.BroadcastToRoom("/", fmt.Sprintf("%d", routeid), "update", data)
+		server.BroadcastToRoom("/", fmt.Sprint(data.BusId), "update", data)
+	})
 
+	server.OnEvent("/", "busSelected", func(s socketio.Conn, busId int) {
+		s.LeaveAll()
+		s.Join(fmt.Sprint(busId))
+		s.Emit("roomJoined", fmt.Sprint("{code:200,message:'you joined the rooms',", "ids:,", s.Rooms(), "}"))
 	})
 
 	server.OnEvent("/", "sourceSelected", func(s socketio.Conn, routeId []int) {
@@ -38,7 +44,7 @@ func InitSocket() *socketio.Server {
 		for _, v := range routeId {
 			s.Join(fmt.Sprintf("%d", v))
 		}
-		s.Emit("roomJoined", fmt.Sprint("{code:200,message:'you joined the rooms',","ids:,",s.Rooms(),"}"))
+		s.Emit("roomJoined", fmt.Sprint("{code:200,message:'you joined the rooms',", "ids:,", s.Rooms(), "}"))
 	})
 
 	server.OnEvent("/", "bye", func(s socketio.Conn) string {
