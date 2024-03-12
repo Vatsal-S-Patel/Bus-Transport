@@ -63,7 +63,7 @@ func (app *App) InitializeRoutes() {
 		log.Println(err.Error())
 		return
 	}
-	server := socket.InitSocket()
+	server := socket.InitSocket(app.controller.DB)
 	r.Handle("/socket.io/", server)
 	defer server.Close()
 	r.Handle("/", http.FileServer(http.Dir("./asset")))

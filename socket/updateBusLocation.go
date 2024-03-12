@@ -1,7 +1,9 @@
 package socket
 
 import (
+	"busproject/database"
 	"busproject/model"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -9,7 +11,7 @@ import (
 	socketio "github.com/googollee/go-socket.io"
 )
 
-func InitSocket() *socketio.Server {
+func InitSocket(db *sql.DB) *socketio.Server {
 	server := socketio.NewServer(nil)
 
 	server.OnConnect("/", func(s socketio.Conn) error {
@@ -25,6 +27,11 @@ func InitSocket() *socketio.Server {
 		if err != nil {
 			log.Println(err)
 			s.Emit("err", err.Error())
+		}
+		err = database.UpdateLiveBus(db, data)
+		if err != nil {
+			fmt.Println(err.Error())
+			s.Emit("err",err.Error())
 		}
 		server.BroadcastToRoom("/", fmt.Sprintf("%d", routeid), "update", data)
 		server.BroadcastToRoom("/", fmt.Sprint(data.BusId), "update", data)
