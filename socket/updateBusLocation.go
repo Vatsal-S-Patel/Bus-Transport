@@ -44,9 +44,6 @@ func InitSocket(db *sql.DB) *socketio.Server {
 	})
 
 	server.OnEvent("/", "sourceSelected", func(s socketio.Conn, routeId []int) {
-		fmt.Println(routeId)
-		// var routeId []int
-		// json.Unmarshal([]byte(input),&routeId)
 		s.LeaveAll()
 		for _, v := range routeId {
 			s.Join(fmt.Sprintf("%d", v))
