@@ -65,7 +65,6 @@ func (app *App) InitializeRoutes() {
 	}
 	server := socket.InitSocket(app.controller.DB)
 	r.Handle("/socket.io/", server)
-	defer server.Close()
 	r.Handle("/", http.FileServer(http.Dir("./asset")))
 	log.Println("INFO: Server started on PORT:" + server_port)
 	http.ListenAndServe(":"+server_port, r)

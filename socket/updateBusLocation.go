@@ -7,20 +7,34 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net"
+	"time"
 
 	socketio "github.com/googollee/go-socket.io"
+	"github.com/googollee/go-socket.io/engineio"
 )
 
-func InitSocket(db *sql.DB) *socketio.Server {
-	server := socketio.NewServer(nil)
+var m = map[string]net.Addr{}
 
-	server.OnConnect("/", func(s socketio.Conn) error {
-		s.SetContext("")
+func InitSocket(db *sql.DB) *socketio.Server {
+	server := socketio.NewServer(&engineio.Options{
+		PingInterval: 5 * time.Second,
+		PingTimeout:  10 * time.Second,
+	})
+
+	server.OnConnect("", func(s socketio.Conn) error {
+		fmt.Println(s.RemoteAddr(), " is connected")
 		fmt.Println("connected:", s.ID())
+		m[s.ID()] = s.RemoteAddr()
+		// fmt.Println(m)
+		// s.Close()
+		fmt.Println("now active connections are", server.Count())
 		return nil
 	})
 
 	server.OnEvent("/", "update", func(s socketio.Conn, msg string, routeid int) {
+		// fmt.Println(s.RemoteAddr(), " got socket for update the bus")
+
 		// fmt.Println("notice:", msg)
 		var data = model.BusStatus{}
 		err := json.Unmarshal([]byte(msg), &data)
@@ -31,45 +45,91 @@ func InitSocket(db *sql.DB) *socketio.Server {
 		err = database.UpdateLiveBus(db, data)
 		if err != nil {
 			fmt.Println(err.Error())
-			s.Emit("err",err.Error())
+			s.Emit("err", err.Error())
 		}
-		server.BroadcastToRoom("/", fmt.Sprintf("%d", routeid), "update", data)
-		server.BroadcastToRoom("/", fmt.Sprint(data.BusId), "update", data)
+		server.BroadcastToRoom("/", fmt.Sprintf("%d", routeid), "update", data, routeid)
+		server.BroadcastToRoom("/", fmt.Sprintf("%dbus", data.BusId), "update", data, routeid)
 	})
 
 	server.OnEvent("/", "busSelected", func(s socketio.Conn, busId int) {
-		s.LeaveAll()
-		s.Join(fmt.Sprint(busId))
+		// fmt.Println(s.RemoteAddr(), " got socket for bus selected")
+		server.LeaveAllRooms("/", s)
+		s.Join(fmt.Sprintf("%dbus", busId))
+		if len(s.Rooms()) == 0 {
+			s.Emit("roomJoined", fmt.Sprint("{code:200,message:'no rooms to join !1',", "ids:,", s.Rooms(), "}"))
+			return
+		}
 		s.Emit("roomJoined", fmt.Sprint("{code:200,message:'you joined the rooms',", "ids:,", s.Rooms(), "}"))
 	})
 
 	server.OnEvent("/", "sourceSelected", func(s socketio.Conn, routeId []int) {
-		s.LeaveAll()
+		// fmt.Println(s.RemoteAddr(), " got socket for source selected")
+		server.LeaveAllRooms("/", s)
 		for _, v := range routeId {
 			s.Join(fmt.Sprintf("%d", v))
+		}
+		if len(s.Rooms()) == 0 {
+			s.Emit("roomJoined", fmt.Sprint("{code:200,message:'no rooms to join !1',", "ids:,", s.Rooms(), "}"))
+			return
 		}
 		s.Emit("roomJoined", fmt.Sprint("{code:200,message:'you joined the rooms',", "ids:,", s.Rooms(), "}"))
 	})
 
-	server.OnEvent("/", "bye", func(s socketio.Conn) string {
+	server.OnEvent("/", "bye", func(s socketio.Conn) {
 		fmt.Println("got bye from client")
-		last := s.Context().(string)
+		fmt.Println(s.RemoteAddr(), " is disconnected with bye")
 		s.Emit("bye", "bye bye")
-		s.Close()
-		return last
+		delete(m, s.ID())
+		err := s.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println("now active connections are", server.Count())
 	})
 
 	server.OnError("/", func(s socketio.Conn, e error) {
 		fmt.Println("meet error:", e)
+		fmt.Println(s.RemoteAddr(), " is disconnectd due to error", e)
+
+		// fmt.Println(m)
+		err := s.Close()
+		fmt.Println("now active connections are", server.Count())
+		// print("hello")
+		if err != nil {
+			fmt.Println(err)
+		}
 	})
 
-	server.OnDisconnect("/", func(s socketio.Conn, reason string) {
+	server.OnDisconnect("", func(s socketio.Conn, reason string) {
 		fmt.Println("closed", reason)
+		server.LeaveAllRooms("/", s)
+		fmt.Println(s.RemoteAddr(), " is disconnected")
+		delete(m, s.ID())
+		fmt.Println("now active connections are", server.Count())
+		err := s.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+		s.Emit("disconnect", reason)
+	})
+
+	server.OnEvent("/", "disconnect", func(s socketio.Conn, reason string) {
+		fmt.Println("a client is disconnected", reason)
+		fmt.Println(s.RemoteAddr(), " is disconnected")
+		server.LeaveAllRooms("/", s)
+		delete(m, s.ID())
+		err := s.Close()
+		fmt.Println("now connections are ", server.Count())
+		if err != nil {
+			fmt.Println(err)
+		}
 	})
 
 	go func() {
 		fmt.Println("socket is listening")
 		server.Serve()
+		defer server.Close()
+
 	}()
 
 	return server
