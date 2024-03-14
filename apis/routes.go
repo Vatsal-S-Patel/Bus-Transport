@@ -67,7 +67,10 @@ func (app *App) InitializeRoutes() {
 	r.Handle("/socket.io/", server)
 	r.Handle("/", http.FileServer(http.Dir("./asset")))
 	log.Println("INFO: Server started on PORT:" + server_port)
-	http.ListenAndServe(":"+server_port, r)
+	err = http.ListenAndServe(":"+server_port, r)
+	if err != nil {
+		log.Println("Error while listening server", err)
+	}
 }
 
 func corsMiddleware(next http.Handler) http.Handler {
