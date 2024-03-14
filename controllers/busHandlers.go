@@ -4,6 +4,7 @@ import (
 	"busproject/database"
 	"busproject/model"
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -27,8 +28,13 @@ func (c *Controller) CreateBusHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = database.UpdateLiveBus(c.DB, model.BusStatus{
-		BusId: bus.Id,
+		BusId:       bus.Id,
+		LastUpdated: "00:00",
 	})
+	if err != nil {
+		log.Println(err.Error())
+		return
+	}
 
 	OutputToClient(w, http.StatusOK, "bus inserted successfull", nil)
 }
