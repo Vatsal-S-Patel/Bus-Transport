@@ -1,0 +1,14 @@
+hr{
+  margin-top: 10px;
+  margin-bottom: 4px;
+}
+
+.station{
+  height: 400px;
+  overflow: scroll;
+}
+
+.tableOrder{
+  height: 400px;
+  overflow: scroll;
+}
