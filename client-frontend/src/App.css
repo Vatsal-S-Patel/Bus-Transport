@@ -1,0 +1,183 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  stroke: none;
+  font-family:"Noto Sans";
+}
+
+
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100vh;
+}
+
+.map .ol-overlaycontainer {
+  cursor: pointer;
+}
+
+.side-bar {
+  position: absolute;
+  right: 0;
+  z-index: 10;
+  padding: 20px;
+  /* width: 600px; */
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background-color: rgb(255, 255, 255);
+  overflow-y: auto;
+  border-left: 4px dashed grey;
+  transition: all 1s;
+}
+
+.side-bar .heading {
+  color: purple;
+  font-size: 3rem;
+}
+
+.side-bar .reset-selection-btn {
+  padding: 5px 5px;
+  font-weight: 700;
+  background-color: rgb(255, 136, 76);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.side-bar .reset-selection-btn:hover{
+  background-color: rgb(252, 120, 54);
+}
+.side-bar .expand-shrink-btn {
+  padding: 5px 5px;
+  font-weight: 700;
+  background-color: rgb(253, 142, 86);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.side-bar .expand-shrink-btn:hover{
+  background-color: rgb(252, 120, 54);
+}
+
+.route-name {
+  font-weight: bold;
+}
+
+#route-info {
+  width: 100%;
+  text-align: left;
+  padding: 10px;
+  /* border: 1px solid green; */
+  border-collapse: collapse;
+}
+
+#route-info td, th {
+  padding: 5px;
+  border: 2px solid green;
+}
+#route-info th {
+  color: blueviolet;
+}
+#route-info td:first-child {
+  text-align: center;
+}
+#route-info td {
+  text-transform: uppercase;
+  color: rgb(9, 40, 46);
+}
+
+#route-info tr td:first-child{
+  font-weight: bold;
+}
+
+#route-info tr:hover{
+  cursor: pointer;
+  background-color: yellow;
+  transition: all 200ms ease-in-out;
+}
+
+#route-info th {
+  padding: 10px 10px;
+}
+
+.vector-layer {
+  opacity: 1;
+  color: green;
+}
+
+.expanded-view {
+  width: 70%;
+}
+
+.shrink-view {
+  width: 30%;
+}
+
+#route-info-wrapper {
+  width: 100%;
+  min-height: 700px;
+  overflow-x: auto;
+  padding-top: 10px;
+}
+
+@media (max-width:600px) {
+  .side-bar {
+    border-top: 4px solid grey;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    z-index: 10;
+    background-color: white;
+    padding: 20px;
+    width: 100%;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: scroll;
+  }
+
+  .expanded-view {
+    height: 70%;
+  }
+  
+  .shrink-view {
+    height: 30%;
+  }
+
+  /* #route-info-wrapper {
+    overflow-x: auto;
+  } */
+}
+
+.input-div{
+  /* padding: 10px; */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.input-div label {
+  font-weight: bold;
+}
+
+.input-div > select {
+  padding: 10px;
+  font-size: 15px;
+}
+
+.current-station-error {
+  font-size: 1.5rem;
+  width: 100%;
+  text-transform: uppercase;
+  padding: 20px 0px;
+  font-weight: bold;
+}
