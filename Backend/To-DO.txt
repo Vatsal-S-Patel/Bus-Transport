@@ -1,0 +1,13 @@
+on selection of a marker show every approaching bus to the station
+
+OUTPUT :-
+ - route name bus name and time
+ - query :- 
+    - get lat long of users station
+    - join station and routestation and find the route going through the station
+    - 
+
+
+
+- create entry for route station order mapping
+- array input were given
