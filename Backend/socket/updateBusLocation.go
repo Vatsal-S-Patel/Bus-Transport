@@ -7,14 +7,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"net"
 	"time"
 
 	socketio "github.com/googollee/go-socket.io"
 	"github.com/googollee/go-socket.io/engineio"
 )
 
-var m = map[string]net.Addr{}
+// var m = map[string]net.Addr{}
 
 func InitSocket(db *sql.DB) *socketio.Server {
 	server := socketio.NewServer(&engineio.Options{
@@ -23,9 +22,9 @@ func InitSocket(db *sql.DB) *socketio.Server {
 	})
 
 	server.OnConnect("", func(s socketio.Conn) error {
-		fmt.Println(s.RemoteAddr(), " is connected")
+		// fmt.Println(s.RemoteAddr(), " is connected")
 		fmt.Println("connected:", s.ID())
-		m[s.ID()] = s.RemoteAddr()
+		// m[s.ID()] = s.RemoteAddr()
 		// fmt.Println(m)
 		// s.Close()
 		fmt.Println("now active connections are", server.Count())
@@ -77,9 +76,9 @@ func InitSocket(db *sql.DB) *socketio.Server {
 
 	server.OnEvent("/", "bye", func(s socketio.Conn) {
 		fmt.Println("got bye from client")
-		fmt.Println(s.RemoteAddr(), " is disconnected with bye")
+		// fmt.Println(s.RemoteAddr(), " is disconnected with bye")
 		s.Emit("bye", "bye bye")
-		delete(m, s.ID())
+		// delete(m, s.ID())
 		err := s.Close()
 		if err != nil {
 			fmt.Println(err)
@@ -89,7 +88,7 @@ func InitSocket(db *sql.DB) *socketio.Server {
 
 	server.OnError("/", func(s socketio.Conn, e error) {
 		fmt.Println("meet error:", e)
-		fmt.Println(s.RemoteAddr(), " is disconnectd due to error", e)
+		// fmt.Println(s.RemoteAddr(), " is disconnectd due to error", e)
 
 		// fmt.Println(m)
 		err := s.Close()
@@ -103,8 +102,8 @@ func InitSocket(db *sql.DB) *socketio.Server {
 	server.OnDisconnect("", func(s socketio.Conn, reason string) {
 		fmt.Println("closed", reason)
 		server.LeaveAllRooms("/", s)
-		fmt.Println(s.RemoteAddr(), " is disconnected")
-		delete(m, s.ID())
+		// fmt.Println(s.RemoteAddr(), " is disconnected")
+		// delete(m, s.ID())
 		fmt.Println("now active connections are", server.Count())
 		err := s.Close()
 		if err != nil {
@@ -115,9 +114,9 @@ func InitSocket(db *sql.DB) *socketio.Server {
 
 	server.OnEvent("/", "disconnect", func(s socketio.Conn, reason string) {
 		fmt.Println("a client is disconnected", reason)
-		fmt.Println(s.RemoteAddr(), " is disconnected")
+		// fmt.Println(s.RemoteAddr(), " is disconnected")
 		server.LeaveAllRooms("/", s)
-		delete(m, s.ID())
+		// delete(m, s.ID())
 		err := s.Close()
 		fmt.Println("now connections are ", server.Count())
 		if err != nil {

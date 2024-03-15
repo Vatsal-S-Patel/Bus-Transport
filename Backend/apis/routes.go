@@ -77,10 +77,24 @@ func corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Set CORS headers
 		// r.parse
-		println(r.URL.Port(),"utl")
-		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "content-type")
+		// println(r.Header.Get(""),"utl")
+		allowedOrigins := []string{"http://localhost:3000", "http://localhost:3001"}
+
+		origin := r.Header.Get("Origin")
+            // Check if the request origin is allowed
+            for _, allowedOrigin := range allowedOrigins {
+                if allowedOrigin == origin {
+                    w.Header().Set("Access-Control-Allow-Origin", origin)
+                    w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+                    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+                    break
+                }
+            }
+		// origin := r.Header.Get("origin")
+		// println("origin",origin)
+		// w.Header().Set("Access-Control-Allow-Origin", origin)
+		// w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		// w.Header().Set("Access-Control-Allow-Headers", "content-type")
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		w.Header().Set("Content-Type", "application/json")
 
