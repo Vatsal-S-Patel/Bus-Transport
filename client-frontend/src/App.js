@@ -4,7 +4,7 @@ import "./App.css";
 import MapComponent from "./components/MapComponent.js";
 import { Manager } from "socket.io-client";
 
-const IP = "192.168.6.107:8080";
+const IP = "localhost:8080";
 
 const route_data = [
   {
@@ -220,7 +220,7 @@ const MapApp = () => {
       });
 
     // connect with socket connections
-    const manager = new Manager("ws://192.168.6.107:8080", {
+    const manager = new Manager(`ws://${IP}:8080`, {
       reconnectionDelayMax: 100000,
       transports: ["polling"],
     });

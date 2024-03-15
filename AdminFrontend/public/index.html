@@ -22,7 +22,7 @@
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <script src="https://cdn.socket.io/socket.io-1.0.0.js"></script>
     <script>
-      var socket = io("http://192.168.6.107:8080", { transports: ["polling"] });
+      var socket = io("http://localhost:8080", { transports: ["polling"] });
       socket.on("connect", () => {
         console.log("Connection established");
       });
