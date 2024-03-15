@@ -1,7 +1,6 @@
 import e from "cors";
 import { useEffect, useState } from "react";
 import coords from "./latlongJSONArray";
-
 const BusHome = () => {
   // Usestate to handle the form data
   const [formData, setFormData] = useState({
