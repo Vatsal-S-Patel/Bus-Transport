@@ -67,6 +67,12 @@ func UpdateLiveBus(db *sql.DB, data model.BusStatus) error {
 	return err
 }
 
+func ChangeBusStatus(db *sql.DB,busid int,status int)error{
+	sqlQuery := `UPDATE transport.busstatus SET status = $1 WHERE bus_id = $2`
+	_,err := db.Exec(sqlQuery,status,busid)
+	return err
+}
+
 // func InsertAll(fil string, routes *[]model.Route, station *[]model.Station, schedule *[]model.Schedule, routeStation *[]model.RouteStation, driver *[]model.Driver, bus *[]model.Bus) {
 
 // 	file, err := os.Open(fil)

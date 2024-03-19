@@ -13,28 +13,21 @@ import (
 	"github.com/googollee/go-socket.io/engineio"
 )
 
-// var m = map[string]net.Addr{}
+var m = map[string]int{}
 
 func InitSocket(db *sql.DB) *socketio.Server {
 	server := socketio.NewServer(&engineio.Options{
-		PingInterval: 5 * time.Second,
+		PingInterval: 1 * time.Second,
 		PingTimeout:  10 * time.Second,
 	})
 
 	server.OnConnect("", func(s socketio.Conn) error {
-		// fmt.Println(s.RemoteAddr(), " is connected")
 		fmt.Println("connected:", s.ID())
-		// m[s.ID()] = s.RemoteAddr()
-		// fmt.Println(m)
-		// s.Close()
 		fmt.Println("now active connections are", server.Count())
 		return nil
 	})
 
 	server.OnEvent("/", "update", func(s socketio.Conn, msg string, routeid int) {
-		// fmt.Println(s.RemoteAddr(), " got socket for update the bus")
-
-		// fmt.Println("notice:", msg)
 		var data = model.BusStatus{}
 		err := json.Unmarshal([]byte(msg), &data)
 		if err != nil {
@@ -51,7 +44,6 @@ func InitSocket(db *sql.DB) *socketio.Server {
 	})
 
 	server.OnEvent("/", "busSelected", func(s socketio.Conn, busId int) {
-		// fmt.Println(s.RemoteAddr(), " got socket for bus selected")
 		server.LeaveAllRooms("/", s)
 		s.Join(fmt.Sprintf("%dbus", busId))
 		if len(s.Rooms()) == 0 {
@@ -62,7 +54,6 @@ func InitSocket(db *sql.DB) *socketio.Server {
 	})
 
 	server.OnEvent("/", "sourceSelected", func(s socketio.Conn, routeId []int) {
-		// fmt.Println(s.RemoteAddr(), " got socket for source selected")
 		server.LeaveAllRooms("/", s)
 		for _, v := range routeId {
 			s.Join(fmt.Sprintf("%d", v))
@@ -76,9 +67,12 @@ func InitSocket(db *sql.DB) *socketio.Server {
 
 	server.OnEvent("/", "bye", func(s socketio.Conn) {
 		fmt.Println("got bye from client")
-		// fmt.Println(s.RemoteAddr(), " is disconnected with bye")
+		if v,ok := m[s.ID()];ok{
+			database.ChangeBusStatus(db,v,0)
+			log.Println("a bus with id ",v ," disconnected")
+			delete(m,s.ID())
+		}
 		s.Emit("bye", "bye bye")
-		// delete(m, s.ID())
 		err := s.Close()
 		if err != nil {
 			fmt.Println(err)
@@ -86,14 +80,31 @@ func InitSocket(db *sql.DB) *socketio.Server {
 		fmt.Println("now active connections are", server.Count())
 	})
 
+	server.OnEvent("/", "bus", func(s socketio.Conn, busid int) {
+		err := database.ChangeBusStatus(db, busid, 1)
+		if err != nil {
+			log.Println(err)
+			s.Close()
+			s.Emit("error", err.Error)
+			return
+		}
+		m[s.ID()] = busid
+		log.Println("a bus is connected")
+		s.Emit("hello", "you have been registered")
+	})
+
+	server.OnEvent("/","map",func(s socketio.Conn){
+		s.Emit("map",m)
+	})
+
 	server.OnError("/", func(s socketio.Conn, e error) {
 		fmt.Println("meet error:", e)
-		// fmt.Println(s.RemoteAddr(), " is disconnectd due to error", e)
-
-		// fmt.Println(m)
+		if v, ok := m[s.ID()]; ok {
+			database.ChangeBusStatus(db, v, 0)
+			delete(m, s.ID())
+		}
 		err := s.Close()
 		fmt.Println("now active connections are", server.Count())
-		// print("hello")
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -102,8 +113,10 @@ func InitSocket(db *sql.DB) *socketio.Server {
 	server.OnDisconnect("", func(s socketio.Conn, reason string) {
 		fmt.Println("closed", reason)
 		server.LeaveAllRooms("/", s)
-		// fmt.Println(s.RemoteAddr(), " is disconnected")
-		// delete(m, s.ID())
+		if v, ok := m[s.ID()]; ok {
+			database.ChangeBusStatus(db, v, 0)
+			delete(m, s.ID())
+		}
 		fmt.Println("now active connections are", server.Count())
 		err := s.Close()
 		if err != nil {
@@ -116,6 +129,11 @@ func InitSocket(db *sql.DB) *socketio.Server {
 		fmt.Println("a client is disconnected", reason)
 		// fmt.Println(s.RemoteAddr(), " is disconnected")
 		server.LeaveAllRooms("/", s)
+		if v,ok := m[s.ID()];ok{
+			database.ChangeBusStatus(db,v,0)
+			log.Println("a bus with id ",v ," disconnected")
+			delete(m,s.ID())
+		}
 		// delete(m, s.ID())
 		err := s.Close()
 		fmt.Println("now connections are ", server.Count())
