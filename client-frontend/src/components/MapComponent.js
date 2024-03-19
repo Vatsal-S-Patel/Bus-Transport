@@ -15,7 +15,6 @@ import Fill from "ol/style/Fill";
 import stationIcon from "../images/bus_image2.png";
 import busIcon from "../images/image.png";
 import currentLocationIcon from "../current_location.svg";
-import "./MapComponent.css";
 import { Circle, LineString } from "ol/geom";
 import Stroke from "ol/style/Stroke";
 

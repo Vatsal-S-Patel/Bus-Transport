@@ -3,6 +3,8 @@ import "ol/ol.css";
 import "./App.css";
 import MapComponent from "./components/MapComponent.js";
 import { Manager } from "socket.io-client";
+import resetIcon from "./images/reset-svgrepo-com.svg"
+import backIcon from "./images/backward-3-svgrepo-com.svg"
 
 const IP = "localhost:8080";
 
@@ -71,21 +73,32 @@ const MapApp = () => {
     setDestinationStation(newValue);
   };
   const showAllBuses = () => {
-    socketConn.emit("sourceSelected", [1,2,3,4,5,6,7,8,9,10,11,12,13,14])
+    socketConn.emit(
+      "sourceSelected",
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+    );
   };
   const selectBus = (busInfo) => {
-    console.log(busInfo)
-    console.log("SOCKET EMIT EVENT")
-    setCurrentBuses([])
-    socketConn.emit("busSelected", busInfo.bus_id)
+    console.log(busInfo);
+    console.log("SOCKET EMIT EVENT");
+    setCurrentBuses([]);
+    socketConn.emit("busSelected", busInfo.bus_id);
   };
 
   const resetSelections = () => {
+    let btn = document.querySelector(".reset-selection-btn")
+    document.querySelector(".reset-selection-btn").style.rotate = "360deg"
+
+    setTimeout(() => {
+     document.querySelector(".reset-selection-btn").style.rotate = "0deg"
+      
+    }, 1000);
+
     console.log("reset");
     setSourceStation(null);
     setDestinationStation(null);
 
-    socketConn.emit("sourceSelected", [])
+    socketConn.emit("sourceSelected", []);
 
     // //
 
@@ -110,16 +123,23 @@ const MapApp = () => {
   };
 
   useEffect(() => {
-
-    let newArray = currentStationRoutes
+    let newArray = currentStationRoutes;
     // as this data changes see if there is any update or not if there then update cuurrent routes
-    currentBuses.forEach(busData => {
-      newArray  = newArray.map(routeInfo => routeInfo.bus_id == busData.bus_id ? {...routeInfo, lat: busData.lat, long: busData.long, last_station_order: busData.last_station_order}: routeInfo)
-    })
+    currentBuses.forEach((busData) => {
+      newArray = newArray.map((routeInfo) =>
+        routeInfo.bus_id == busData.bus_id
+          ? {
+              ...routeInfo,
+              lat: busData.lat,
+              long: busData.long,
+              last_station_order: busData.last_station_order,
+            }
+          : routeInfo
+      );
+    });
 
-    setCurrentStationRoutes(newArray)
-  }, [currentBuses])
-  
+    setCurrentStationRoutes(newArray);
+  }, [currentBuses]);
 
   // fetch route infomation when sourcestation adn destination station changes
   useEffect(() => {
@@ -157,6 +177,7 @@ const MapApp = () => {
             console.log("SOCKET EMITTED");
             socketConn.emit("sourceSelected", []);
           } else {
+            let time = new Date()
             let updatedData = routeStations.map((info) => {
               return {
                 ...info,
@@ -166,13 +187,13 @@ const MapApp = () => {
                   info.destination,
                   stationsMap
                 ).name,
-                last_updated: new Date()
+                last_updated: time.getHours() + ":"+time.getMinutes(),
               };
             });
 
             // if it has lat long then add this bus to current buses
             // ig let all the buses have lat long
-            setCurrentBuses(updatedData)
+            setCurrentBuses(updatedData);
 
             setCurrentStationRoutes(updatedData);
 
@@ -220,12 +241,14 @@ const MapApp = () => {
       });
 
     // connect with socket connections
-    const manager = new Manager(`ws://${IP}:8080`, {
+    const manager = new Manager("ws://"+IP, {
       reconnectionDelayMax: 100000,
       transports: ["polling"],
     });
 
-    const socket = manager.socket("/", { transports: ["polling", "websocket"] });
+    const socket = manager.socket("/", {
+      transports: ["polling", "websocket"],
+    });
 
     setSocketConn(socket);
 
@@ -300,11 +323,21 @@ const MapApp = () => {
       <div
         className={`side-bar ${expanded ? "expanded-view" : "shrink-view"}  `}
       >
-        <button className="expand-shrink-btn" onClick={expandShrinkView}>
-          {expanded ? "SHRINK VIEW >>>>>" : " <<<<< EXPAND VIEW"}
+       <div className="top-bar">
+       <button className="expand-shrink-btn" onClick={expandShrinkView}>
+          {expanded ? 
+          <img className="translate-img" src={backIcon}></img>
+          : 
+          <img src={backIcon}></img>}
         </button>
 
-        <h1 className="heading">Find Bus</h1>
+        <button className={`reset-selection-btn`} onClick={resetSelections}>
+          <img src={resetIcon}></img>
+        </button>
+       </div>
+
+        <div className="side-bar-content">
+           {/* <h1 className="heading">Find Bus</h1> */}
         <div className="input-div">
           <label>Source</label>
           <select
@@ -328,7 +361,9 @@ const MapApp = () => {
             value={destinationStation}
             onChange={(e) => handleDestinationChange(e.target.value)}
           >
-            <option key={null} value={null}>NOT SELECTED</option>
+            <option key={null} value={null}>
+              NOT SELECTED
+            </option>
             {stations.map((station) => (
               <option key={station.id} value={station.id}>
                 {station.name}
@@ -336,15 +371,13 @@ const MapApp = () => {
             ))}
           </select>
         </div>
-        <button className="reset-selection-btn" onClick={resetSelections}>
-          RESET SELECTIONS
-        </button>
-        <button className="reset-selection-btn" onClick={showAllBuses}>
+       
+        {/* <button className="reset-selection-btn" onClick={showAllBuses}>
           SHOW ALL BUSES
-        </button>
+        </button> */}
 
         {currentStationRoutes && currentStationRoutes.length > 0 && (
-          <div>
+          <div className="about-bus-info">
             Click on particular bus info to get live location of it to be
             displayed on map.
           </div>
@@ -359,21 +392,33 @@ const MapApp = () => {
                 <th>DESTINATION</th>
                 <th>DEPARTURE TIME</th>
                 <th>LAST STATION</th>
-                <th>LAST UPDATED LOCATION</th>
+                {/* <th>LAST UPDATED LOCATION</th> */}
               </tr>
             </thead>
             <tbody>
               {!currentStationRoutes && <div>Stations Data Not Loaded</div>}
               {currentStationRoutes &&
                 currentStationRoutes.map((currentStationRoute, index) => (
-                  <tr key={index} onClick={()=>selectBus(currentStationRoute)}>
+                  <tr
+                    key={index}
+                    onClick={() => selectBus(currentStationRoute)}
+                  >
                     {/* <td>{currentStationRoute.id}</td> */}
                     <td>{currentStationRoute.route_name}</td>
                     <td>{currentStationRoute.sourceName}</td>
                     <td>{currentStationRoute.destinationName}</td>
                     <td>{currentStationRoute.departure_time}</td>
-                    <td>{getStationInfoById(currentStationRoute.last_station_order, stationsMap).name}</td>
-                    <td>{currentStationRoute.lat},{currentStationRoute.long}</td>
+                    <td>
+                      {
+                        getStationInfoById(
+                          currentStationRoute.last_station_order,
+                          stationsMap
+                        ).name
+                      }
+                    </td>
+                    {/* <td>
+                      {currentStationRoute.lat},{currentStationRoute.long}
+                    </td> */}
                   </tr>
                 ))}
             </tbody>
@@ -382,6 +427,7 @@ const MapApp = () => {
           <div className="current-station-error">
             {currentStationRoutesError}
           </div>
+        </div>
         </div>
       </div>
     </div>
