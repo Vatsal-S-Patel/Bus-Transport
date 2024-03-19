@@ -11,6 +11,7 @@ const BusHome = () => {
   });
 
   const [routeId,setRouteId] = useState("");
+  const [routeName,setRouteName] = useState("");
   const [busId,setBusId] = useState("");
 
   // The function to change state as per the change in the form data
@@ -38,6 +39,7 @@ const BusHome = () => {
       // var latitude = 23+Math.random()
       // var longitude = 72+Math.random()
 
+      formData.route_name = routeName
       formData.lat = coords[(i)%41].latitude;
       formData.long = coords[(i)%41].longitude;
 
@@ -119,14 +121,14 @@ const BusHome = () => {
             htmlFor="last_station_order"
             className="block text-sm font-medium text-gray-700"
           >
-            Last Station Order
+            Route Name
           </label>
           <input
-            type="number"
+            type="text"
             id="last_station_order"
             name="last_station_order"
-            value={formData.last_station_order}
-            onChange={handleChange}
+            value={routeName}
+            onChange={(e)=>setRouteName(e.target.value)}
             className="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300"
             required
           />

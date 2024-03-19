@@ -15,6 +15,7 @@ type BusStatus struct {
 	Traffic          int     `json:"traffic" sql:"traffic"`
 	Status           int     `json:"status" sql:"status"`
 	LastStationOrder int     `json:"last_station_order" sql:"last_station_order"`
+	RouteName        string  `json:"route_name" sql:"route_name"`
 }
 
 type Driver struct {
@@ -63,7 +64,7 @@ type Station struct {
 
 type UpcomingBus struct {
 	Bus_id           int     `json:"bus_id" sql:"bus_id"`
-	Route_id		 int     `json:"route_id" sql:"route_id"` 
+	Route_id         int     `json:"route_id" sql:"route_id"`
 	Name             string  `json:"route_name" sql:"route_name"`
 	Source           string  `json:"source" sql:"source"`
 	Destination      string  `json:"destination" sql:"destinaiton"`

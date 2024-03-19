@@ -5,27 +5,7 @@ import MapComponent from "./MapComponent.js";
 import { Manager } from "socket.io-client";
 import resetIcon from "../images/reset-svgrepo-com.svg"
 import backIcon from "../images/backward-3-svgrepo-com.svg"
-
-const IP = "localhost:8080";
-
-const route_data = [
-  {
-    bus_route: "1",
-    start_stop: "30",
-    stop_order: "1",
-    stop_name: "DCIS Circle",
-    lat: "23.129273",
-    long: "72.5819126",
-  },
-  {
-    bus_route: "1",
-    start_stop: "31",
-    stop_order: "2",
-    stop_name: "Sarthi Bunglows",
-    lat: "23.1229731",
-    long: "72.5778669",
-  },
-];
+import IP from "../IP.js";
 
 /* Initially get all stations information then no need to bother api about this. */
 function getStationInfoById(stationId, stationsMap) {
@@ -33,7 +13,6 @@ function getStationInfoById(stationId, stationsMap) {
   if (stationsMap.has(Number(stationId))) {
     return stationsMap.get(Number(stationId));
   }
-
   return {
     id: Number(stationId),
     name: "not available",
@@ -41,7 +20,7 @@ function getStationInfoById(stationId, stationsMap) {
 }
 
 const ClientMap = () => {
-  // all stations information
+  // All stations information
   const [stations, setStations] = useState([]);
   const [stationsMap, setStationsMap] = useState();
 
@@ -56,11 +35,12 @@ const ClientMap = () => {
 
   const [socketConn, setSocketConn] = useState(null);
   const [currentBuses, setCurrentBuses] = useState([]);
+  
 
   const sourceStationRef = useRef();
   const destinationStationRef = useRef();
 
-  // initially set it false
+  // Initially set it false
   const [expanded, setExpanded] = useState(false);
 
   // Event handler for source station select
@@ -72,14 +52,8 @@ const ClientMap = () => {
   const handleDestinationChange = (newValue) => {
     setDestinationStation(newValue);
   };
-  const showAllBuses = () => {
-    socketConn.emit(
-      "sourceSelected",
-      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
-    );
-  };
+
   const selectBus = (busInfo) => {
-    console.log(busInfo);
     console.log("SOCKET EMIT EVENT");
     setCurrentBuses([]);
     socketConn.emit("busSelected", busInfo.bus_id);
@@ -87,28 +61,21 @@ const ClientMap = () => {
 
   const resetSelections = () => {
     let btn = document.querySelector(".reset-selection-btn")
-    document.querySelector(".reset-selection-btn").style.rotate = "360deg"
+    btn.style.rotate = "360deg"
 
     setTimeout(() => {
-     document.querySelector(".reset-selection-btn").style.rotate = "0deg"
-      
+     btn.style.rotate = "0deg"
     }, 1000);
 
-    console.log("reset");
     setSourceStation(null);
     setDestinationStation(null);
 
     socketConn.emit("sourceSelected", []);
 
-    // //
-
-    // sourceStationRef.current = null
-    // destinationStationRef.current = null
-
     document.getElementById("source").selectedIndex = 0;
     document.getElementById("destination").selectedIndex = 0;
 
-    // jo data uski vajah se aaya he use bhi nikal do
+    // Jo data uski vajah se aaya he use bhi nikal do
     setCurrentBuses([]);
     setCurrentStationRoutes([]);
     setCurrentStationRoutesError("Not Selected");
@@ -138,24 +105,49 @@ const ClientMap = () => {
       );
     });
 
+    socket.on("update", (busInfo) => {
+      console.log("UPDATE CAME", busInfo)
+      // Check Already array me he ki nahi
+      let isAlreadyBusDisplayed = false;
+      
+      currentBuses.map((bus) => {
+        if (bus.bus_id == busInfo.bus_id) {
+          isAlreadyBusDisplayed = true;
+        }
+      });
+     
+      if (isAlreadyBusDisplayed) {
+        // Update this information
+        let newArray = currentBuses.map((bus) =>
+          bus.bus_id == busInfo.bus_id
+            ? {
+                ...busInfo,
+              }
+            : bus
+        );
+        setCurrentBuses(newArray);
+        // Agar ye bus current routes me he then updated,
+      } else {
+        setCurrentBuses([...currentBuses , busInfo])
+      }
+    });
+
     setCurrentStationRoutes(newArray);
   }, [currentBuses]);
 
   // fetch route infomation when sourcestation adn destination station changes
   useEffect(() => {
-
     if (sourceStation != null) {
       let data = {};
       data["source"] = Number(sourceStation);
       if (destinationStation != null) {
         data["destination"] = Number(destinationStation);
       }
-
       // Reset Station Routes
       setCurrentStationRoutes([]);
       setCurrentStationRoutesError(null);
 
-      fetch(`http://${IP}/api/schedule/GetUpcomingBus`, {
+      fetch(`http://${IP}:8080/api/schedule/GetUpcomingBus`, {
         method: "POST",
         body: JSON.stringify(data),
         type: "application/json",
@@ -187,7 +179,6 @@ const ClientMap = () => {
             // if it has lat long then add this bus to current buses
             // ig let all the buses have lat long
             setCurrentBuses(updatedData);
-
             setCurrentStationRoutes(updatedData);
 
             let routes = new Set();
@@ -195,14 +186,9 @@ const ClientMap = () => {
               routes.add(element.route_id);
             });
 
-            console.log(routes);
-            console.log(updatedData);
-
             let routesArray = [];
             routes.forEach((route) => routesArray.push(route));
 
-            // Now set data to socket
-            console.log("SOCKET EMITTED");
             socketConn.emit("sourceSelected", routesArray);
           }
         })
@@ -213,16 +199,13 @@ const ClientMap = () => {
   }, [sourceStation, destinationStation, stations]);
 
   useEffect(() => {
-    fetch(`http://${IP}/api/station/`)
+    fetch(`http://${IP}:8080/api/station/`)
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         let stations = data.Data;
         setStations(stations);
 
-        // Put stations data in map for later use.
         let mp = new Map();
-
         stations.forEach((station) => {
           mp.set(station.id, station);
         });
@@ -232,16 +215,6 @@ const ClientMap = () => {
       .catch((error) => {
         console.error("Error fetching stations data:", error);
       });
-
-    // connect with socket connections
-    const manager = new Manager("ws://"+IP, {
-      reconnectionDelayMax: 100000,
-      transports: ["polling"],
-    });
-
-    const socket = manager.socket("/", {
-      transports: ["polling", "websocket"],
-    });
 
     setSocketConn(socket);
 
@@ -257,36 +230,6 @@ const ClientMap = () => {
     socket.on("error", (error) => {
       setCurrentBuses([]);
       console.log("Error", error);
-    });
-
-    socket.on("update", (busInfo) => {
-      console.log("UPDATE", busInfo);
-
-      // check already array me he ki nahi
-      let isAlreadyBusDisplayed = false;
-      currentBuses.forEach((bus) => {
-        if (bus.bus_id == busInfo.bus_id) {
-          isAlreadyBusDisplayed = true;
-        }
-      });
-
-      if (isAlreadyBusDisplayed) {
-        // update this information
-        let newArray = currentBuses.map((bus) =>
-          bus.bus_id == busInfo.bus_id
-            ? {
-                ...busInfo,
-              }
-            : bus
-        );
-        setCurrentBuses(newArray);
-
-        // agar ye bus current routes me he then updated,
-      } else {
-        currentBuses.push(busInfo);
-      }
-
-      console.log(currentBuses);
     });
 
     socket.on("roomJoined", (data) => {
@@ -307,7 +250,6 @@ const ClientMap = () => {
           setSourceStation={setSourceStation}
           destinationStation={destinationStation}
           setDestinationStation={setDestinationStation}
-          routeStations={route_data}
           currentBuses={currentBuses}
           sourceStationRef={sourceStationRef}
           destinationStationRef={destinationStationRef}
@@ -330,7 +272,6 @@ const ClientMap = () => {
        </div>
 
         <div className="side-bar-content">
-           {/* <h1 className="heading">Find Bus</h1> */}
         <div className="input-div">
           <label>Source</label>
           <select
@@ -365,10 +306,6 @@ const ClientMap = () => {
           </select>
         </div>
        
-        {/* <button className="reset-selection-btn" onClick={showAllBuses}>
-          SHOW ALL BUSES
-        </button> */}
-
         {currentStationRoutes && currentStationRoutes.length > 0 && (
           <div className="about-bus-info">
             Click on particular bus info to get live location of it to be
@@ -385,7 +322,6 @@ const ClientMap = () => {
                 <th>DESTINATION</th>
                 <th>DEPARTURE TIME</th>
                 <th>LAST STATION</th>
-                {/* <th>LAST UPDATED LOCATION</th> */}
               </tr>
             </thead>
             <tbody>
@@ -396,7 +332,6 @@ const ClientMap = () => {
                     key={index}
                     onClick={() => selectBus(currentStationRoute)}
                   >
-                    {/* <td>{currentStationRoute.id}</td> */}
                     <td>{currentStationRoute.route_name}</td>
                     <td>{currentStationRoute.sourceName}</td>
                     <td>{currentStationRoute.destinationName}</td>
@@ -409,14 +344,10 @@ const ClientMap = () => {
                         ).name
                       }
                     </td>
-                    {/* <td>
-                      {currentStationRoute.lat},{currentStationRoute.long}
-                    </td> */}
                   </tr>
                 ))}
             </tbody>
           </table>
-
           <div className="current-station-error">
             {currentStationRoutesError}
           </div>
