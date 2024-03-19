@@ -71,6 +71,8 @@ type UpcomingBus struct {
 	Lat              float64 `json:"lat" sql:"lat"`
 	Long             float64 `json:"long" sql:"long"`
 	LastStationOrder int     `json:"last_station_order" sql:"last_station_order"`
+	Status           int     `json:"status" sql:"status"`
+	Traffic           int     `json:"traffic" sql:"traffic"`
 }
 
 type OutputStruct struct {

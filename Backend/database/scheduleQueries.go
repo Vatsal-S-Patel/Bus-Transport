@@ -71,10 +71,10 @@ func GetUpcomingBus(db *sql.DB, source, destination int) ([]model.UpcomingBus, e
 	var result *sql.Rows
 	var err error
 	if destination == 0 {
-		sqlStatement = `SELECT f.bus_id,route_id,route_name,source,destination,departure_time,b.lat,b.long,b.last_station_order FROM (SELECT bus_id,route_id,route_name,source,destination,departure_time,station_order FROM bustransportsystem WHERE station_id = $1 and status = 1) AS f LEFT JOIN transport.busstatus as b ON f.bus_id = b.bus_id WHERE (b.status = 0 AND departure_time >= current_time) OR (b.status = 1 AND b.last_station_order <= f.station_order) ORDER BY departure_time ASC;`
+		sqlStatement = `SELECT f.bus_id,route_id,route_name,source,destination,departure_time,b.lat,b.long,b.last_station_order,b.status,b.traffic FROM (SELECT bus_id,route_id,route_name,source,destination,departure_time,station_order FROM bustransportsystem WHERE station_id = $1 and status = 1) AS f LEFT JOIN transport.busstatus as b ON f.bus_id = b.bus_id WHERE (b.status = 0 AND departure_time >= current_time) OR (b.status = 1 AND b.last_station_order <= f.station_order) ORDER BY departure_time ASC;`
 		result, err = db.Query(sqlStatement, source)
 	} else {
-		sqlStatement = `SELECT o.bus_id,route_id,route_name,source,destination,departure_time,b.lat,b.long,b.last_station_order FROM (SELECT s.bus_id,s.route_id,s.route_name,s.source,s.destination,s.departure_time FROM (SELECT * FROM bustransportsystem WHERE station_id = $1 and status = 1) as f INNER JOIN (SELECT * FROM bustransportsystem WHERE station_id = $2 and status = 1) as s ON f.route_id = s.route_id WHERE f.bus_id = s.bus_id AND f.station_order < s.station_order) as o LEFT JOIN transport.busstatus as b ON o.bus_id = b.bus_id WHERE b.status = 1 OR (b.status = 0 AND departure_time >= CURRENT_TIME) ORDER BY departure_time ASC;`
+		sqlStatement = `SELECT o.bus_id,route_id,route_name,source,destination,departure_time,b.lat,b.long,b.last_station_order,b.status,b.traffic FROM (SELECT s.bus_id,s.route_id,s.route_name,s.source,s.destination,s.departure_time FROM (SELECT * FROM bustransportsystem WHERE station_id = $1 and status = 1) as f INNER JOIN (SELECT * FROM bustransportsystem WHERE station_id = $2 and status = 1) as s ON f.route_id = s.route_id WHERE f.bus_id = s.bus_id AND f.station_order < s.station_order) as o LEFT JOIN transport.busstatus as b ON o.bus_id = b.bus_id WHERE b.status = 1 OR (b.status = 0 AND departure_time >= CURRENT_TIME) ORDER BY departure_time ASC;`
 		result, err = db.Query(sqlStatement, source, destination)
 	}
 	if err != nil {
@@ -88,7 +88,7 @@ func GetUpcomingBus(db *sql.DB, source, destination int) ([]model.UpcomingBus, e
 	var busOutput []model.UpcomingBus
 	var dummy model.UpcomingBus
 	for result.Next() {
-		result.Scan(&dummy.Bus_id,&dummy.Route_id,&dummy.Name, &dummy.Source, &dummy.Destination, &dummy.DepartureTime, &dummy.Lat, &dummy.Long, &dummy.LastStationOrder)
+		result.Scan(&dummy.Bus_id,&dummy.Route_id,&dummy.Name, &dummy.Source, &dummy.Destination, &dummy.DepartureTime, &dummy.Lat, &dummy.Long, &dummy.LastStationOrder,&dummy.Status,&dummy.Traffic)
 		busOutput = append(busOutput, dummy)
 	}
 	if len(busOutput) == 0 {
