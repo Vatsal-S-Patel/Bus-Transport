@@ -15,14 +15,11 @@ func InsertDriver(db *sql.DB, driver model.Driver) error {
 		return err
 	}
 
-	// log.Println("Driver inserted successfully")
-	
 	return nil
 }
 
 func GetAllDriver(db *sql.DB) ([]model.Driver, error) {
 	sqlStatement := `SELECT * FROM transport.driver;`
-
 	var drivers []model.Driver
 
 	res, err := db.Query(sqlStatement)
@@ -33,11 +30,13 @@ func GetAllDriver(db *sql.DB) ([]model.Driver, error) {
 
 	for res.Next() {
 		var driver model.Driver
+
 		err := res.Scan(&driver.Id, &driver.Name, &driver.Phone, &driver.Gender, &driver.Dob)
 		if err != nil {
 			log.Println(err.Error())
 			return nil, err
 		}
+		
 		driver.Dob = driver.Dob[:10]
 		drivers = append(drivers, driver)
 	}
@@ -59,6 +58,5 @@ func DeleteDriver(db *sql.DB, id string) error {
 		return err
 	}
 
-	// log.Println("Driver Deleted successfully")
 	return nil
 }

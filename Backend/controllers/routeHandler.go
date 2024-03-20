@@ -13,7 +13,6 @@ import (
 func (c *Controller) CreateRouteHandler(w http.ResponseWriter, r *http.Request) {
 	var routeWithStationOrder model.RouteStationMerged
 
-	// log.Println(r.Body)
 	err := json.NewDecoder(r.Body).Decode(&routeWithStationOrder)
 	if err != nil {
 		OutputToClient(w, http.StatusInternalServerError, err.Error(), nil)
@@ -33,19 +32,10 @@ func (c *Controller) CreateRouteHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	OutputToClient(w, http.StatusOK, "routes is created", nil)
-	// for _, v := range routeWithStationOrder.RouteStationArray {
-	// 	log.Println("inserting staiton with ", routeWithStationOrder.Id, " name ", v.StationId, " with order ", v.StationOrder)
-	// 	err := database.InsertRouteStation(c.DB, v)
-
-	// 	if err != nil {
-	// 		log.Println(err.Error())
-	// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-	// 		return
-	// 	}
-	// }
 }
 
 func (c *Controller) GetAllRouteHandler(w http.ResponseWriter, r *http.Request) {
+	
 	routes, err := database.GetAllRoute(c.DB)
 	if err != nil {
 		log.Println(err.Error())
