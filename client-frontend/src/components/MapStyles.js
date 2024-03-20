@@ -5,6 +5,7 @@ import Fill from "ol/style/Fill";
 import stationIcon from "../images/bus_image2.png";
 import busIcon from "../images/image.png";
 import currentLocationIcon from "../current_location.svg";
+import { getStationInfoById } from "./ClientMap";
 
 
 export function getHighlightedStyle({ stationId, stationName, showText }) {
@@ -65,7 +66,7 @@ export function getCurrentLocationStyle(user) {
     });
   }
 
- export function getBusStyle(route,status) {
+ export function getBusStyle(route,status,sid) {
   if(status == 0) {
     status = "Not Active"
   }
@@ -74,14 +75,13 @@ export function getCurrentLocationStyle(user) {
   }
     return new Style({
       image: new Icon({
-        // color: "#8959A8",
         crossOrigin: "anonymous",
         src: busIcon,
         width: 40,
         height: 40,
       }),
       text: new Text({
-        text: `${route} ${status}`,
+        text: `${route} ${status} ${getStationInfoById(sid)}`,
         offsetY: -20,
         fill: new Fill({
           color: "#000",

@@ -7,8 +7,9 @@ import resetIcon from "../images/reset-svgrepo-com.svg"
 import backIcon from "../images/backward-3-svgrepo-com.svg"
 import IP from "../IP.js";
 
+export station
 /* Initially get all stations information then no need to bother api about this. */
-function getStationInfoById(stationId, stationsMap) {
+export function getStationInfoById(stationId, stationsMap) {
   // see if id present then give name
   if (stationsMap.has(Number(stationId))) {
     return stationsMap.get(Number(stationId));
@@ -137,6 +138,8 @@ const ClientMap = () => {
 
   // fetch route infomation when sourcestation adn destination station changes
   useEffect(() => {
+    setCurrentBuses([]);
+    
     if (sourceStation != null) {
       let data = {};
       data["source"] = Number(sourceStation);
@@ -176,9 +179,9 @@ const ClientMap = () => {
               };
             });
 
-            // if it has lat long then add this bus to current buses
-            // ig let all the buses have lat long
-            setCurrentBuses(updatedData);
+            // If it has lat long then add this bus to current buses
+            // it let all the buses have lat long
+            
             setCurrentStationRoutes(updatedData);
 
             let routes = new Set();

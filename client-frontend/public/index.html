@@ -36,6 +36,12 @@
         console.log("Connection Closed");
       });
 
+      socket.emit("bus",1)
+      window.addEventListener('unload', function() {
+        console.log("Connection closed");
+        socket.close();
+      });
+
     </script>
 
     <title>Bus Transport</title>

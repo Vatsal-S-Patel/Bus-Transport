@@ -33,6 +33,7 @@ const BusHome = () => {
       formData.traffic = parseInt(formData.traffic)
       
       formData.last_station_order = i%41
+      formData.last_station_id = coords[i%41].id
       formData.bus_id = parseInt(busId);
       
       // Random generated lat long for developer testing

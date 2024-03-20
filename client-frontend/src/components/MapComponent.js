@@ -97,9 +97,11 @@ const MapComponent = ({
       busFeature.set("lat", latitude);
       busFeature.set("long", longitude);
       busFeature.set("type", "bus");
-      busFeature.setStyle(getBusStyle(busInfo.route_name,busInfo.status));
+      busFeature.setStyle(getBusStyle(busInfo.route_name,busInfo.status,busInfo.last_station,busInfo.last_station_id));
       return busFeature;
     });
+
+    console.log("bus features now are", busFeatures)
 
     const busSource = new VectorSource({
       features: busFeatures,
