@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from "react";
 import "ol/ol.css";
 import "../App.js";
 import MapComponent from "./MapComponent.js";
-import { Manager } from "socket.io-client";
 import resetIcon from "../images/reset-svgrepo-com.svg"
 import backIcon from "../images/backward-3-svgrepo-com.svg"
 import IP from "../IP.js";
@@ -34,7 +33,6 @@ const ClientMap = () => {
   const [currentStationRoutesError, setCurrentStationRoutesError] =
     useState(null);
 
-  const [socketConn, setSocketConn] = useState(null);
   const [currentBuses, setCurrentBuses] = useState([]);
   
 
@@ -57,7 +55,7 @@ const ClientMap = () => {
   const selectBus = (busInfo) => {
     console.log("SOCKET EMIT EVENT");
     setCurrentBuses([]);
-    socketConn.emit("busSelected", busInfo.bus_id);
+    socket.emit("busSelected", busInfo.bus_id);
   };
 
   const resetSelections = () => {
@@ -71,7 +69,7 @@ const ClientMap = () => {
     setSourceStation(null);
     setDestinationStation(null);
 
-    socketConn.emit("sourceSelected", []);
+    socket.emit("sourceSelected", []);
 
     document.getElementById("source").selectedIndex = 0;
     document.getElementById("destination").selectedIndex = 0;
@@ -163,7 +161,7 @@ const ClientMap = () => {
             setCurrentStationRoutesError(data.Message);
 
             console.log("SOCKET EMITTED");
-            socketConn.emit("sourceSelected", []);
+            socket.emit("sourceSelected", []);
           } else {
             let time = new Date()
             let updatedData = routeStations.map((info) => {
@@ -192,7 +190,7 @@ const ClientMap = () => {
             let routesArray = [];
             routes.forEach((route) => routesArray.push(route));
 
-            socketConn.emit("sourceSelected", routesArray);
+            socket.emit("sourceSelected", routesArray);
           }
         })
         .catch((error) => {
@@ -219,7 +217,6 @@ const ClientMap = () => {
         console.error("Error fetching stations data:", error);
       });
 
-    setSocketConn(socket);
 
     socket.on("connect", () => {
       console.log("connected");
