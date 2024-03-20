@@ -8,12 +8,16 @@ import (
 )
 
 var envMap map[string]string
+var (
+	ErrFileNotExist = errors.New("we can't found the env file")
+	ErrDataNotExist = errors.New("env file is available but asked data is not there")
+)
 
 func ReadEnv() error {
 	m, err := godotenv.Read(".env")
 	if err != nil {
 		log.Println(err.Error())
-		return err
+		return ErrFileNotExist
 	}
 	envMap = m
 
@@ -26,5 +30,5 @@ func GetEnv(detail string) (string, error) {
 		return data, nil
 	}
 
-	return "", errors.New("ERROR: Detail not exist in env file")
+	return "", ErrDataNotExist
 }

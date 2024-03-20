@@ -11,6 +11,7 @@ import (
 
 func (c *Controller) CreateRouteStationHandler(w http.ResponseWriter, r *http.Request) {
 	var routeStation model.RouteStation
+
 	err := json.NewDecoder(r.Body).Decode(&routeStation)
 	if err != nil {
 		OutputToClient(w,http.StatusInternalServerError,err.Error(),nil)
@@ -55,6 +56,5 @@ func (c *Controller) CreateMappingHandler(mapping model.RouteStationMerged, mapp
 		return http.StatusInternalServerError
 	}
 
-	// log.Println("Mapping Successful")
 	return http.StatusOK
 }
