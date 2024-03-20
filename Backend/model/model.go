@@ -65,7 +65,7 @@ type Station struct {
 
 type UpcomingBus struct {
 	Bus_id           int     `json:"bus_id" sql:"bus_id"`
-	Route_id		 int     `json:"route_id" sql:"route_id"` 
+	Route_id         int     `json:"route_id" sql:"route_id"`
 	Name             string  `json:"route_name" sql:"route_name"`
 	Source           string  `json:"source" sql:"source"`
 	Destination      string  `json:"destination" sql:"destinaiton"`
@@ -74,7 +74,17 @@ type UpcomingBus struct {
 	Long             float64 `json:"long" sql:"long"`
 	LastStationOrder int     `json:"last_station_order" sql:"last_station_order"`
 	Status           int     `json:"status" sql:"status"`
-	Traffic           int     `json:"traffic" sql:"traffic"`
+	Traffic          int     `json:"traffic" sql:"traffic"`
+}
+type UpcomingSpecialBus struct {
+	SourceRoute      int    `json:"source_route"`
+	SourceRouteName  string `json:"source_route_name"`
+	JunctionStation  int    `json:"junction_station"`
+	JunctionName     string `json:"junction_name"`
+	JunctionOrder    int    `json:"junction_order"`
+	MyOrder          int    `json:"my_order"`
+	DestinationRoute int    `json:"destination_route"`
+	DestinationRouteName  string `json:"destination_route_name"`
 }
 
 type OutputStruct struct {

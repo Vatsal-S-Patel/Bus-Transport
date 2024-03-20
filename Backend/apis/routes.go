@@ -40,6 +40,7 @@ func (app *App) InitializeRoutes() *mux.Router {
 
 	scheduleRouter.HandleFunc("/", app.controller.CreateScheduleHandler).Methods("POST")
 	scheduleRouter.HandleFunc("/GetUpcomingBus", app.controller.GetUpcomingBus).Methods("POST")
+	scheduleRouter.HandleFunc("/GetUpcomingSpecialBus", app.controller.GetUpcomingSpecialBus).Methods("POST")
 	scheduleRouter.HandleFunc("/", app.controller.GetAllScheduleHandler).Methods("GET")
 	scheduleRouter.HandleFunc("/{id}", app.controller.DeleteScheduleHandler).Methods("POST")
 
