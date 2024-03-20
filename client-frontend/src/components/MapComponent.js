@@ -85,7 +85,7 @@ const MapComponent = ({
     console.log("current bus array updated");
     /* Bus features */
     const busFeatures = currentBuses.map((busInfo) => {
-      // console.log(busInfo)
+      console.log(busInfo)
       let latitude = busInfo.lat;
       let longitude = busInfo.long;
 
@@ -97,7 +97,7 @@ const MapComponent = ({
       busFeature.set("lat", latitude);
       busFeature.set("long", longitude);
       busFeature.set("type", "bus");
-      busFeature.setStyle(getBusStyle(busInfo.route_name,busInfo.status,busInfo.last_station,busInfo.last_station_id));
+      busFeature.setStyle(getBusStyle(busInfo.route_name,busInfo.status,busInfo.last_station_name));
       return busFeature;
     });
 

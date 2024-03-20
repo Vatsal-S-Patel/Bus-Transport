@@ -15,7 +15,7 @@ type BusStatus struct {
 	Traffic          int     `json:"traffic" sql:"traffic"`
 	Status           int     `json:"status" sql:"status"`
 	LastStationOrder int     `json:"last_station_order" sql:"last_station_order"`
-	LastStationId    int     `json:"last_station_id" sql:"last_station_id"`
+	LastStationName  string  `json:"last_station_name" sql:"last_station_name"`
 	RouteName        string  `json:"route_name" sql:"route_name"`
 }
 
