@@ -92,13 +92,68 @@ func GetUpcomingBus(db *sql.DB, source, destination int) ([]model.UpcomingBus, e
 	var dummy model.UpcomingBus
 
 	for result.Next() {
-		result.Scan(&dummy.Bus_id,&dummy.Route_id,&dummy.Name, &dummy.Source, &dummy.Destination, &dummy.DepartureTime, &dummy.Lat, &dummy.Long, &dummy.LastStationOrder,&dummy.Status,&dummy.Traffic)
+		result.Scan(&dummy.Bus_id, &dummy.Route_id, &dummy.Name, &dummy.Source, &dummy.Destination, &dummy.DepartureTime, &dummy.Lat, &dummy.Long, &dummy.LastStationOrder, &dummy.Status, &dummy.Traffic)
 		busOutput = append(busOutput, dummy)
 	}
 
 	if len(busOutput) == 0 {
 		return nil, errors.New("sorry no bus available")
 	}
-	
+
+	return busOutput, nil
+}
+
+func GetUpcomingSpecialBus(db *sql.DB, source, destination int) ([]model.UpcomingSpecialBus, error) {
+	var sqlStatement string
+	var result *sql.Rows
+	var err error
+	//	sqlStatement = `SELECT v1.route_id as sourceRoute,v1.station_id as middle, v2.route_id as destinationRoute FROM
+	//
+	// (SELECT o.route_id,station_id,station_order from transport.routestations as o INNER JOIN
+	//
+	//	(SELECT route_id,station_order as myOrder FROM transport.routestations as r where r.station_id = $1) as s
+	//	ON o.route_id = s.route_id where station_order > myOrder) as v1
+	//	INNER JOIN
+	//
+	// (SELECT o.route_id,station_id,station_order from transport.routestations as o INNER JOIN
+	//
+	//	(SELECT route_id,station_order as myOrder FROM transport.routestations as r where r.station_id = $2) as s
+	//	ON o.route_id = s.route_id where station_order < myOrder) as v2 ON v1.station_id = v2.station_id;`
+	sqlStatement = `SELECT * from (SELECT v3.route_id as sourceRoute,v3.route_name as sourceRouteName,v3.station_id as junctionStation,v3.station_name as junctionName,v3.station_order as junctionOrder,v3.myOrder,v4.route_id as destinationRoute,v4.route_name as destinationRouteName 
+FROM (select v1.route_id,v1.route_name,v2.station_id,v2.station_name,v2.station_order,v1.myOrder from 
+               	(SELECT route_id,station_id,route_name,station_name,station_order as myOrder FROM bustransportsystem where station_id = $1) as v1 
+									inner join 
+								(SELECT route_id,station_id,route_name,station_name,station_order FROM bustransportsystem) as v2 
+              	on v1.route_id = v2.route_id where station_order > myOrder) as v3
+					INNER JOIN
+					(select v1.route_id,v1.route_name,v2.station_id,v2.station_name,v2.station_order from 
+           	(SELECT route_id,station_id,route_name,station_name,station_order as myOrder FROM bustransportsystem where station_id = $2) as v1 
+							inner join 
+						(SELECT route_id,station_id,route_name,station_name,station_order FROM bustransportsystem) as v2 
+          on v1.route_id = v2.route_id where station_order < myOrder) as v4 
+      ON v3.station_id = v4.station_id group by sourceRoute, sourceRouteName, junctionStation, junctionName, destinationRoute, destinationRouteName, junctionOrder,myOrder) as q
+     order by (junctionOrder - myOrder); `
+	result, err = db.Query(sqlStatement, source, destination)
+	if err != nil {
+		return nil, err
+	}
+
+	if result == nil {
+		return nil, errors.New("sorry no data available currently")
+	}
+	defer result.Close()
+
+	var busOutput []model.UpcomingSpecialBus
+	var dummy model.UpcomingSpecialBus
+
+	for result.Next() {
+		result.Scan(&dummy.SourceRoute, &dummy.SourceRouteName, &dummy.JunctionStation,&dummy.JunctionName,&dummy.JunctionOrder,&dummy.MyOrder,&dummy.DestinationRoute,&dummy.DestinationName)
+		busOutput = append(busOutput, dummy)
+	}
+
+	if len(busOutput) == 0 {
+		return nil, errors.New("sorry no route available")
+	}
+
 	return busOutput, nil
 }
