@@ -1,6 +1,7 @@
 import e from "cors";
 import { useEffect, useState } from "react";
 import coords from "./latlongJSONArray";
+
 const BusHome = () => {
   // Usestate to handle the form data
   const [formData, setFormData] = useState({
@@ -14,12 +15,13 @@ const BusHome = () => {
   const [routeName,setRouteName] = useState("");
   const [busId,setBusId] = useState("");
 
+  
   // The function to change state as per the change in the form data
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-
+ 
   // Func to handle the submit and emit information to socket
   const handleSubmit = (e) => {
     e.preventDefault();

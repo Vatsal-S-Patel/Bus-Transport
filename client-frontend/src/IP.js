@@ -1,5 +1,5 @@
-// var IP = "192.168.6.107"
-var IP = "localhost"
+var IP = "192.168.7.33"
+// var IP = "localhost"
 
 export default IP
 
