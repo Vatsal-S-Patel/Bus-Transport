@@ -8,9 +8,12 @@ import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import Point from "ol/geom/Point";
 import { fromLonLat, transform } from "ol/proj";
-import "./MapComponent.css";
-import { getBusStyle, getCurrentLocationStyle, getHighlightedStyle, getNormalStyle } from "./MapStyles";
-
+import {
+  getBusStyle,
+  getCurrentLocationStyle,
+  getHighlightedStyle,
+  getNormalStyle,
+} from "./MapStyles";
 
 const MapComponent = ({
   stations,
@@ -22,7 +25,6 @@ const MapComponent = ({
   sourceStationRef,
   destinationStationRef,
 }) => {
-
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [error, setError] = useState(null);
@@ -42,12 +44,74 @@ const MapComponent = ({
 
   /* UseEffects */
   useEffect(() => {
+    function selectSourceDestinationMarker(isSource) {
+      if (markerSourceRef.current) {
+        markerSourceRef.current.getFeatures().forEach((feature) => {
+          let stationId = feature.get("id");
+          const stationName = feature.get("name");
+
+          if(feature.getId() == "userLocation"){
+              console.log("user lcoation")
+          } else {
+            if (
+              isSource
+                ? stationId === Number(sourceStation)
+                : stationId === Number(destinationStation)
+            ) {
+              if (isSource) {
+                setSourceStation(stationId);
+                isSourceSelected.current = true;
+                sourceStationRef.current = feature;
+              } else {
+                setDestinationStation(stationId);
+                isDestinationSelected.current = true;
+                destinationStationRef.current = feature;
+              }
+  
+              // feature related styles
+              feature.set("isSelected", true);
+              feature.setStyle(
+                getHighlightedStyle({
+                  stationId: stationId,
+                  stationName: stationName,
+                  showText: true,
+                })
+              );
+            } else if (
+              isSource
+                ? destinationStation && stationId == Number(destinationStation)
+                : sourceStation && stationId == Number(sourceStation)
+            ) {
+              // do nothing
+            } else {
+              feature.set("isSelected", true);
+              feature.setStyle(
+                getNormalStyle({
+                  stationId: stationId,
+                  stationName: stationName,
+                  showText: false,
+                })
+              );
+            }
+          }
+
+        });
+
+        if (isSource) {
+          document.getElementById("source").style.border = "1px solid blue";
+        } else {
+          document.getElementById("destination").style.border =
+            "1px solid blue";
+        }
+      }
+    }
 
     if (sourceStation == null) {
       document.getElementById("source").style.border = "none";
 
       // if source station ref here then remove its style
       if (sourceStationRef.current) {
+        console.log("style changed");
         let stationId = sourceStationRef.current.get("id");
         let stationName = sourceStationRef.current.get("name");
         sourceStationRef.current.setStyle(
@@ -69,23 +133,21 @@ const MapComponent = ({
     }
     // if someone selects sourceStation then update it on map
     if (sourceStation != null) {
-      // ye ya fir destination change hua he
-      document.getElementById("source").style.border = "1px solid blue";
+      selectSourceDestinationMarker(true);
     }
     if (destinationStation != null) {
+      selectSourceDestinationMarker(false);
       // get feature from features list and highlight it.
-      document.getElementById("destination").style.border = "1px solid blue";
     }
   }, [sourceStation, destinationStation]);
 
   /* UseEffects */
   useEffect(() => {
-
     // current bus array updated
     console.log("current bus array updated");
     /* Bus features */
     const busFeatures = currentBuses.map((busInfo) => {
-      console.log(busInfo)
+      console.log(busInfo);
       let latitude = busInfo.lat;
       let longitude = busInfo.long;
 
@@ -97,11 +159,17 @@ const MapComponent = ({
       busFeature.set("lat", latitude);
       busFeature.set("long", longitude);
       busFeature.set("type", "bus");
-      busFeature.setStyle(getBusStyle(busInfo.route_name,busInfo.status,busInfo.last_station_name));
+      busFeature.setStyle(
+        getBusStyle(
+          busInfo.route_name,
+          busInfo.status,
+          busInfo.last_station_name
+        )
+      );
       return busFeature;
     });
 
-    console.log("bus features now are", busFeatures)
+    console.log("bus features now are", busFeatures);
 
     const busSource = new VectorSource({
       features: busFeatures,
@@ -121,6 +189,8 @@ const MapComponent = ({
         source: busSource,
         className: "vector-layer",
       });
+
+      // busLayer.getSource().getFeatures()
 
       busLayerRef.current = busLayer;
       if (mapRef.current) {
@@ -158,6 +228,8 @@ const MapComponent = ({
 
       let stationName = coord.name;
       let stationId = coord.id;
+
+      // console.log(typeof stationId)
 
       feature.set("id", stationId);
       feature.set("name", stationName);
@@ -226,7 +298,7 @@ const MapComponent = ({
       busFeature.set("lat", latitude);
       busFeature.set("long", longitude);
       busFeature.set("type", "bus");
-      busFeature.setStyle(getBusStyle(busInfo.route_name,busInfo.status));
+      busFeature.setStyle(getBusStyle(busInfo.route_name, busInfo.status));
       return busFeature;
     });
 
@@ -258,7 +330,6 @@ const MapComponent = ({
       );
 
       initialMap.forEachFeatureAtPixel(event.pixel, function (feature) {
-
         if (feature.getId() == "userLocation") {
           console.log("got user location clicked");
         } else if (feature.get("type") == "bus") {
@@ -270,8 +341,7 @@ const MapComponent = ({
           console.log(stationId, stationName);
 
           if (isSourceSelected.current == false) {
-
-            console.log("first selected")
+            console.log("first selected");
 
             setSourceStation(stationId);
             isSourceSelected.current = true;
@@ -281,8 +351,7 @@ const MapComponent = ({
               getHighlightedStyle({ stationName, stationId, showText: true })
             );
           } else if (isDestinationSelected.current == false) {
-            
-            console.log("second selected")
+            console.log("second selected");
 
             setDestinationStation(stationId);
             feature.set("isSelected", true);
@@ -293,7 +362,7 @@ const MapComponent = ({
             );
           } else {
             var source = markerLayer.getSource();
-            console.log("third selected")
+            console.log("third selected");
 
             // source and destination dono features ki style normal kar do
             // let sourceStationFeature = sourceStationRef.current
@@ -306,7 +375,7 @@ const MapComponent = ({
                 feature.getId() == "userLocation" ||
                 feature.get("type") == "bus"
               ) {
-                console.log("user location or bus")
+                console.log("user location or bus");
               } else {
                 feature.set("isSelected", false);
                 feature.setStyle(
@@ -347,24 +416,21 @@ const MapComponent = ({
       }
 
       features.forEach((feature) => {
-        if(feature.getId() == "userLocation" || feature.getId() == "bus"){
-          
+        if (feature.getId() == "userLocation" || feature.getId() == "bus") {
         } else {
           let isSelected = feature.get("isSelected");
 
-        if (isSelected) {
-
-        } else {
-          feature.setStyle(
-            getNormalStyle({
-              stationId: feature.get("id"),
-              stationName: feature.get("name"),
-              showText: showText,
-            })
-          );
+          if (isSelected) {
+          } else {
+            feature.setStyle(
+              getNormalStyle({
+                stationId: feature.get("id"),
+                stationName: feature.get("name"),
+                showText: showText,
+              })
+            );
+          }
         }
-        }
-        
       });
     });
 
