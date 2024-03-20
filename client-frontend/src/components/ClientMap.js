@@ -7,7 +7,7 @@ import resetIcon from "../images/reset-svgrepo-com.svg"
 import backIcon from "../images/backward-3-svgrepo-com.svg"
 import IP from "../IP.js";
 
-export station
+
 /* Initially get all stations information then no need to bother api about this. */
 export function getStationInfoById(stationId, stationsMap) {
   // see if id present then give name
