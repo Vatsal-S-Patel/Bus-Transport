@@ -14,19 +14,16 @@ func InsertRouteStation(db *sql.DB, routeStation model.RouteStation) error {
 		return err
 	}
 
-	// log.Println("RouteStation inserted successfully")
 	return nil
 }
 
 func InsertAllRouteStation(db *sql.DB, sqlStatement string) error {
 
-	// log.Println(sqlStatement)
 	_, err := db.Exec(sqlStatement[:len(sqlStatement)-1] + ";")
 	if err != nil {
 		return err
 	}
 
-	// log.Println("All RouteStation inserted successfully")
 	return nil
 }
 
@@ -42,11 +39,13 @@ func GetAllRouteStation(db *sql.DB) ([]model.RouteStation, error) {
 	var routeStations []model.RouteStation
 	for res.Next() {
 		var routeStation model.RouteStation
+
 		err := res.Scan(&routeStation.RouteId, &routeStation.StationId, &routeStation.StationOrder)
 		if err != nil {
 			log.Println(err.Error())
 			return nil, err
 		}
+		
 		routeStations = append(routeStations, routeStation)
 	}
 
