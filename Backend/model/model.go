@@ -84,7 +84,7 @@ type UpcomingSpecialBus struct {
 	JunctionOrder    int    `json:"junction_order"`
 	MyOrder          int    `json:"my_order"`
 	DestinationRoute int    `json:"destination_route"`
-	DestinationName  string `json:"destination_name"`
+	DestinationRouteName  string `json:"destination_route_name"`
 }
 
 type OutputStruct struct {
