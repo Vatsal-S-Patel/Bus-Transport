@@ -1,21 +1,17 @@
 package apis
 
 import (
-	"busproject/configs"
 	"busproject/socket"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
 
-func (app *App) InitializeRoutes() {
+func (app *App) InitializeRoutes() *mux.Router {
 
 	r := mux.NewRouter()
 
 	r.Use(corsMiddleware)
-
-	// socket.GetLocation()
 
 	apiRoute := r.PathPrefix("/api").Subrouter()
 
@@ -25,7 +21,6 @@ func (app *App) InitializeRoutes() {
 	routeStationRouter := apiRoute.PathPrefix("/routeStation").Subrouter()
 	scheduleRouter := apiRoute.PathPrefix("/schedule").Subrouter()
 	stationRouter := apiRoute.PathPrefix("/station").Subrouter()
-	// socketRouter := apiRoute.PathPrefix("/socket").Subrouter()
 
 	busRouter.HandleFunc("/", app.controller.CreateBusHandler).Methods("POST")
 	busRouter.HandleFunc("/", app.controller.GetAllBusHandler).Methods("GET")
@@ -51,50 +46,23 @@ func (app *App) InitializeRoutes() {
 	stationRouter.HandleFunc("/", app.controller.CreateStationHandler).Methods("POST")
 	stationRouter.HandleFunc("/", app.controller.GetAllStationHandler).Methods("GET")
 	stationRouter.HandleFunc("/{id}", app.controller.DeleteStationHandler).Methods("POST")
-	// stationRouter.HandleFunc("/routeFromStation/{id}", app.controller.SelectRouteFromSourceOrDestination).Methods("GET")
 
-	// socketRouter.HandleFunc("/buslocation", socket.GetLocation).Methods("POST")
-
-	// For All Entries from CSVs
-	// busRouter.HandleFunc("/all", app.controller.CreateAllHandler).Methods("POST")
-
-	server_port, err := configs.GetEnv("SERVER_PORT")
-	if err != nil {
-		log.Println(err.Error())
-		return
-	}
 	server := socket.InitSocket(app.controller.DB)
+
 	r.Handle("/socket.io/", server)
 	r.Handle("/", http.FileServer(http.Dir("./asset")))
-	log.Println("INFO: Server started on PORT:" + server_port)
-	err = http.ListenAndServe(":"+server_port, r)
-	if err != nil {
-		log.Println("Error while listening server", err)
-	}
+
+	return r
+
 }
 
 func corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Set CORS headers
-		// r.parse
-		// println(r.Header.Get(""),"utl")
-		allowedOrigins := []string{"http://localhost:3000", "http://localhost:3001"}
 
 		origin := r.Header.Get("Origin")
-            // Check if the request origin is allowed
-            for _, allowedOrigin := range allowedOrigins {
-                if allowedOrigin == origin {
-                    w.Header().Set("Access-Control-Allow-Origin", origin)
-                    w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-                    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-                    break
-                }
-            }
-		// origin := r.Header.Get("origin")
-		// println("origin",origin)
-		// w.Header().Set("Access-Control-Allow-Origin", origin)
-		// w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		// w.Header().Set("Access-Control-Allow-Headers", "content-type")
+		w.Header().Set("Access-Control-Allow-Origin", origin)
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		w.Header().Set("Content-Type", "application/json")
 
@@ -106,5 +74,6 @@ func corsMiddleware(next http.Handler) http.Handler {
 
 		// Call the next handler
 		next.ServeHTTP(w, r)
+
 	})
 }

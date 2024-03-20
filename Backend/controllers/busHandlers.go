@@ -88,22 +88,3 @@ func (c *Controller) UpdateLiveBus(w http.ResponseWriter, r *http.Request) {
 	OutputToClient(w, http.StatusOK, "bus updated", nil)
 }
 
-// func (c *Controller) CreateAllHandler(w http.ResponseWriter, r *http.Request) {
-
-// 	var schedules []model.Schedule
-
-// 	database.InsertAll("csvs/Bus_Route_Shedule - Sheet1.csv", nil, nil, &schedules, nil, nil, nil)
-// 	log.Println(schedules)
-// 	for _, schedule := range schedules {
-// 		err := database.InsertSchedule(c.DB, schedule)
-// 		if err != nil {
-// 			log.Println(err.Error())
-// 			return
-// 		}
-// 	}
-// 	log.Println("For lopp chal gaya")
-
-// 	w.WriteHeader(http.StatusOK)
-// 	w.Write([]byte("Successfull All"))
-
-// }

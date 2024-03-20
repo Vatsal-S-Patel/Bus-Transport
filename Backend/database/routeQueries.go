@@ -15,7 +15,6 @@ func InsertRoute(db *sql.DB, route model.Route) error {
 		return err
 	}
 
-	// log.Println("Route inserted successfully")
 	return nil
 }
 
@@ -31,11 +30,13 @@ func GetAllRoute(db *sql.DB) ([]model.Route, error) {
 	var routes []model.Route
 	for res.Next() {
 		var route model.Route
+
 		err := res.Scan(&route.Id, &route.Name, &route.Status, &route.Source, &route.Destination)
 		if err != nil {
 			log.Println(err.Error())
 			return nil, err
 		}
+
 		routes = append(routes, route)
 	}
 
@@ -44,21 +45,13 @@ func GetAllRoute(db *sql.DB) ([]model.Route, error) {
 
 func DeleteRoute(db *sql.DB, id string) error {
 	sqlStatement := `DELETE FROM transport.route WHERE id=$1`
-
 	sqlStatement2 := `DELETE FROM transport.routestations WHERE route_id=$1`
-
-	// sqlStatement3 := `DELETE FROM transport.schedule WHERE route_id=$1`
 
 	newId, err := strconv.Atoi(id)
 	if err != nil {
 		log.Println(err.Error())
 		return err
 	}
-
-	// _, err = db.Exec(sqlStatement3, newId)
-	// if err != nil {
-	// 	return err
-	// }
 
 	_, err = db.Exec(sqlStatement2, newId)
 	if err != nil {
@@ -70,6 +63,5 @@ func DeleteRoute(db *sql.DB, id string) error {
 		return err
 	}
 
-	// log.Println("Route Deleted successfully")
 	return nil
 }
