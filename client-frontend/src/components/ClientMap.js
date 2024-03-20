@@ -30,8 +30,8 @@ const ClientMap = () => {
 
   // After selecting source and destination we will show user below information
   const [currentStationRoutes, setCurrentStationRoutes] = useState([]);
-  const [currentStationRoutesError, setCurrentStationRoutesError] =
-    useState(null);
+  const [currentStationRoutesError, setCurrentStationRoutesError] = useState(null);
+  const [specialStationRoutes, setSpecialStationRoutes] = useState([]);
 
   const [currentBuses, setCurrentBuses] = useState([]);
   
@@ -74,7 +74,6 @@ const ClientMap = () => {
     document.getElementById("source").selectedIndex = 0;
     document.getElementById("destination").selectedIndex = 0;
 
-    // Jo data uski vajah se aaya he use bhi nikal do
     setCurrentBuses([]);
     setCurrentStationRoutes([]);
     setCurrentStationRoutesError("Not Selected");
@@ -90,7 +89,7 @@ const ClientMap = () => {
 
   useEffect(() => {
     let newArray = currentStationRoutes;
-    // as this data changes see if there is any update or not if there then update cuurrent routes
+    // As this data changes see if there is any update or not if there then update cuurrent routes
     currentBuses.forEach((busData) => {
       newArray = newArray.map((routeInfo) =>
         routeInfo.bus_id == busData.bus_id
@@ -125,8 +124,8 @@ const ClientMap = () => {
             : bus
         );
         setCurrentBuses(newArray);
-        // Agar ye bus current routes me he then updated,
       } else {
+        // Append this information
         setCurrentBuses([...currentBuses , busInfo])
       }
     });
@@ -154,10 +153,31 @@ const ClientMap = () => {
         type: "application/json",
       })
         .then((response) => response.json())
-        .then((data) => {
+        .then((d) => {
           let routeStations = data.Data;
-
-          if (data.Code == 500 || data.Code == 404) {
+          if(d.Code == 404){
+            if(destinationStation != null){
+              console.log(data)
+              fetch(`http://${IP}:8080/api/schedule/GetUpcomingSpecialBus`, {
+                method: "POST",
+                body: JSON.stringify(data),
+                type: "application/json",
+              }).then((response) => response.json())
+              .then((data) => {
+                if(data.Data == null){
+                  return
+                }
+                
+                const uniqueElements = new Set(data.Data.map((obj)=>obj.source_name));
+                const uniqueArray = Array.from(uniqueElements).map(id => data.Data.find(obj => obj.source_name === id));
+              
+                setSpecialStationRoutes(uniqueArray);
+              })
+            } else {
+              setCurrentStationRoutesError("No bus found")
+            }
+          }
+          else if (data.Code == 500) {
             setCurrentStationRoutesError(data.Message);
 
             console.log("SOCKET EMITTED");
@@ -217,21 +237,6 @@ const ClientMap = () => {
         console.error("Error fetching stations data:", error);
       });
 
-
-    socket.on("connect", () => {
-      console.log("connected");
-    });
-
-    socket.on("disconnect", () => {
-      setCurrentBuses([]);
-      console.log("disconnected");
-    });
-
-    socket.on("error", (error) => {
-      setCurrentBuses([]);
-      console.log("Error", error);
-    });
-
     socket.on("roomJoined", (data) => {
       console.log("Room joined", data);
     });
@@ -276,7 +281,7 @@ const ClientMap = () => {
           <label>Source</label>
           <select
             id="source"
-            value={sourceStation}
+            value={sourceStation!=null ? sourceStation : ""}
             onChange={(e) => handleSourceChange(e.target.value)}
           >
             <option value={null}>NOT SELECTED</option>
@@ -292,7 +297,7 @@ const ClientMap = () => {
           <label>Destination</label>
           <select
             id="destination"
-            value={destinationStation}
+            value={destinationStation!=null ? destinationStation : ""}
             onChange={(e) => handleDestinationChange(e.target.value)}
           >
             <option key={null} value={null}>
@@ -305,44 +310,65 @@ const ClientMap = () => {
             ))}
           </select>
         </div>
-       
-        {currentStationRoutes && currentStationRoutes.length > 0 && (
-          <div className="about-bus-info">
-            Click on particular bus info to get live location of it to be
-            displayed on map.
+        {currentBuses.length != 0 
+          ?
+          <div id="route-info-wrapper">
+            <table id="route-info">
+              <thead>
+                <tr>
+                  <th>ROUTE</th>
+                  <th>SOURCE</th>
+                  <th>DESTINATION</th>
+                  <th>DEPARTURE TIME</th>
+                </tr>
+              </thead>
+              <tbody>
+                {!currentStationRoutes && <div>Stations Data Not Loaded</div>}
+                {currentStationRoutes &&
+                  currentStationRoutes.map((currentStationRoute, index) => (
+                    <tr
+                      key={index}
+                      onClick={() => selectBus(currentStationRoute)}
+                    >
+                      <td>{currentStationRoute.route_name}</td>
+                      <td>{currentStationRoute.sourceName}</td>
+                      <td>{currentStationRoute.destinationName}</td>
+                      <td>{currentStationRoute.departure_time}</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+            <div className="current-station-error">
+              {currentStationRoutesError}
+            </div>
           </div>
-        )}
-        <div id="route-info-wrapper">
-          {/* <h2>Routes Available</h2> */}
+          :
+         <div id="route-info-wrapper">
           <table id="route-info">
             <thead>
               <tr>
-                <th>ROUTE</th>
-                <th>SOURCE</th>
-                <th>DESTINATION</th>
-                <th>DEPARTURE TIME</th>
+                <th>Starts</th>
+                <th>Junction</th>
+                <th>Ends</th>
               </tr>
             </thead>
             <tbody>
-              {!currentStationRoutes && <div>Stations Data Not Loaded</div>}
-              {currentStationRoutes &&
-                currentStationRoutes.map((currentStationRoute, index) => (
+              {specialStationRoutes &&
+                specialStationRoutes.map((currentStationRoute, index) => (
                   <tr
                     key={index}
-                    onClick={() => selectBus(currentStationRoute)}
                   >
-                    <td>{currentStationRoute.route_name}</td>
-                    <td>{currentStationRoute.sourceName}</td>
-                    <td>{currentStationRoute.destinationName}</td>
-                    <td>{currentStationRoute.departure_time}</td>
+                    <td>{currentStationRoute.source_route_name}</td>
+                    <td>{currentStationRoute.junction_name}</td>
+                    <td>{currentStationRoute.destination_route_name}</td>
                   </tr>
                 ))}
             </tbody>
           </table>
-          <div className="current-station-error">
-            {currentStationRoutesError}
-          </div>
         </div>
+         }
+        
+        
         </div>
       </div>
     </div>

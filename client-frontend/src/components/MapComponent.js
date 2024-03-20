@@ -51,7 +51,7 @@ const MapComponent = ({
           const stationName = feature.get("name");
 
           if(feature.getId() == "userLocation"){
-              console.log("user lcoation")
+              // console.log("user lcoation")
           } else {
             if (
               isSource
@@ -68,7 +68,7 @@ const MapComponent = ({
                 destinationStationRef.current = feature;
               }
   
-              // feature related styles
+              // Feature related styles
               feature.set("isSelected", true);
               feature.setStyle(
                 getHighlightedStyle({
@@ -82,7 +82,7 @@ const MapComponent = ({
                 ? destinationStation && stationId == Number(destinationStation)
                 : sourceStation && stationId == Number(sourceStation)
             ) {
-              // do nothing
+              // Fo nothing
             } else {
               feature.set("isSelected", true);
               feature.setStyle(
@@ -94,7 +94,6 @@ const MapComponent = ({
               );
             }
           }
-
         });
 
         if (isSource) {
@@ -109,7 +108,7 @@ const MapComponent = ({
     if (sourceStation == null) {
       document.getElementById("source").style.border = "none";
 
-      // if source station ref here then remove its style
+      // If source station ref here then remove its style
       if (sourceStationRef.current) {
         console.log("style changed");
         let stationId = sourceStationRef.current.get("id");
@@ -122,7 +121,7 @@ const MapComponent = ({
 
     if (destinationStation == null) {
       document.getElementById("destination").style.border = "none";
-      // if destination station ref here then remove its style
+      // If destination station ref here then remove its style
       if (destinationStationRef.current) {
         let stationId = destinationStationRef.current.get("id");
         let stationName = destinationStationRef.current.get("name");
@@ -144,7 +143,7 @@ const MapComponent = ({
   /* UseEffects */
   useEffect(() => {
     // current bus array updated
-    console.log("current bus array updated");
+    // console.log("current bus array updated");
     /* Bus features */
     const busFeatures = currentBuses.map((busInfo) => {
       console.log(busInfo);
@@ -177,7 +176,7 @@ const MapComponent = ({
 
     // create bus layer if not exist
     if (busLayerRef.current) {
-      // already layer he then just update map reference and its source
+      // Already layer he then just update map reference and its source
       busLayerRef.current.setSource(busSource);
 
       // then render it.
@@ -331,18 +330,12 @@ const MapComponent = ({
 
       initialMap.forEachFeatureAtPixel(event.pixel, function (feature) {
         if (feature.getId() == "userLocation") {
-          console.log("got user location clicked");
         } else if (feature.get("type") == "bus") {
-          console.log("bus clicked");
         } else {
           const stationName = feature.get("name");
           const stationId = feature.get("id");
 
-          console.log(stationId, stationName);
-
           if (isSourceSelected.current == false) {
-            console.log("first selected");
-
             setSourceStation(stationId);
             isSourceSelected.current = true;
             sourceStationRef.current = feature;
@@ -351,8 +344,6 @@ const MapComponent = ({
               getHighlightedStyle({ stationName, stationId, showText: true })
             );
           } else if (isDestinationSelected.current == false) {
-            console.log("second selected");
-
             setDestinationStation(stationId);
             feature.set("isSelected", true);
             isDestinationSelected.current = true;
@@ -364,12 +355,6 @@ const MapComponent = ({
             var source = markerLayer.getSource();
             console.log("third selected");
 
-            // source and destination dono features ki style normal kar do
-            // let sourceStationFeature = sourceStationRef.current
-            // let destinationStationFeature = destinationStation.current
-            // sourceStationFeature.setStyle(getHighlightedStyle({stationId: sourceStationFeature.get("id"), stationName: sourceStationFeature.get("name")}))
-
-            // TODO very important method to work with features.
             source.getFeatures().forEach(function (feature) {
               if (
                 feature.getId() == "userLocation" ||
@@ -420,8 +405,7 @@ const MapComponent = ({
         } else {
           let isSelected = feature.get("isSelected");
 
-          if (isSelected) {
-          } else {
+          if (!isSelected) {
             feature.setStyle(
               getNormalStyle({
                 stationId: feature.get("id"),
@@ -433,7 +417,6 @@ const MapComponent = ({
         }
       });
     });
-
     return () => {
       initialMap.setTarget = null;
     };
