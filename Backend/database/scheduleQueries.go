@@ -147,7 +147,7 @@ FROM (select v1.route_id,v1.route_name,v2.station_id,v2.station_name,v2.station_
 	var dummy model.UpcomingSpecialBus
 
 	for result.Next() {
-		result.Scan(&dummy.SourceRoute, &dummy.SourceRouteName, &dummy.JunctionStation,&dummy.JunctionName,&dummy.JunctionOrder,&dummy.MyOrder,&dummy.DestinationRoute,&dummy.DestinationName)
+		result.Scan(&dummy.SourceRoute, &dummy.SourceRouteName, &dummy.JunctionStation,&dummy.JunctionName,&dummy.JunctionOrder,&dummy.MyOrder,&dummy.DestinationRoute,&dummy.DestinationRouteName)
 		busOutput = append(busOutput, dummy)
 	}
 
