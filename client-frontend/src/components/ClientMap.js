@@ -324,7 +324,6 @@ const ClientMap = () => {
                 <th>SOURCE</th>
                 <th>DESTINATION</th>
                 <th>DEPARTURE TIME</th>
-                <th>LAST STATION</th>
               </tr>
             </thead>
             <tbody>
@@ -339,14 +338,6 @@ const ClientMap = () => {
                     <td>{currentStationRoute.sourceName}</td>
                     <td>{currentStationRoute.destinationName}</td>
                     <td>{currentStationRoute.departure_time}</td>
-                    <td>
-                      {
-                        getStationInfoById(
-                          currentStationRoute.last_station_order,
-                          stationsMap
-                        ).name
-                      }
-                    </td>
                   </tr>
                 ))}
             </tbody>
