@@ -132,7 +132,7 @@ FROM (select v1.route_id,v1.route_name,v2.station_id,v2.station_name,v2.station_
 						(SELECT route_id,station_id,route_name,station_name,station_order FROM bustransportsystem) as v2 
           on v1.route_id = v2.route_id where station_order < myOrder) as v4 
       ON v3.station_id = v4.station_id group by sourceRoute, sourceRouteName, junctionStation, junctionName, destinationRoute, destinationRouteName, junctionOrder,myOrder) as q
-     order by (junctionOrder - myOrder); `
+     where sourceroute <> destinationroute order by (junctionOrder - myOrder); `
 	result, err = db.Query(sqlStatement, source, destination)
 	if err != nil {
 		return nil, err
