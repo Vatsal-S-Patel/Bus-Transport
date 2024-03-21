@@ -11,6 +11,7 @@ import DriverHandle from './components/driver_handle';
 import StationHandle from './components/station_handle';
 import BusHome from './components/live_location_bus';
 import ClientMap from "./components/ClientMap";
+import BusLive from "./components/live_location_bus";
 
 
 const MapApp = () => {
@@ -27,6 +28,7 @@ const MapApp = () => {
         <Route exact path="/admin/driver" element={<><AdminNavbar/><DriverHandle/></>} />
         <Route exact path="/admin/station" element={<><AdminNavbar/><StationHandle/></>} />
         <Route exact path="/bus/home" element={<BusHome/>} />
+        <Route exact path="/bus/live" element={<BusLive/>} />
 
       </Routes>
     </Router>

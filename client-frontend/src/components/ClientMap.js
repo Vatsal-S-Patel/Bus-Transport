@@ -5,7 +5,9 @@ import MapComponent from "./MapComponent.js";
 import resetIcon from "../images/reset-svgrepo-com.svg";
 import backIcon from "../images/backward-3-svgrepo-com.svg";
 import IP from "../IP.js";
-import arrow from "../images/right-arrow.png";
+import { IndirectRoutes } from "./sub-components/indirect_route_component.js";
+import { DirectRoutes } from "./sub-components/direct_route_component.js";
+import { fetchAllRoutes } from "./sub-components/fetch_routes_api.js";
 
 /* Initially get all stations information then no need to bother api about this. */
 function getStationInfoById(stationId, stationsMap) {
@@ -30,8 +32,7 @@ const ClientMap = () => {
 
   // After selecting source and destination we will show user below information
   const [currentStationRoutes, setCurrentStationRoutes] = useState([]);
-  const [currentStationRoutesError, setCurrentStationRoutesError] =
-    useState(null);
+  const [currentStationRoutesError, setCurrentStationRoutesError] = useState(null);
   const [specialStationRoutes, setSpecialStationRoutes] = useState([]);
 
   const [currentBuses, setCurrentBuses] = useState([]);
@@ -136,8 +137,6 @@ const ClientMap = () => {
 
   // fetch route infomation when sourcestation adn destination station changes
   useEffect(() => {
-    setCurrentBuses([]);
-
     if (sourceStation != null) {
       let data = {};
       data["source"] = Number(sourceStation);
@@ -148,78 +147,12 @@ const ClientMap = () => {
       setCurrentStationRoutes([]);
       setCurrentStationRoutesError(null);
 
-      fetch(`http://${IP}:8080/api/schedule/GetUpcomingBus`, {
-        method: "POST",
-        body: JSON.stringify(data),
-        type: "application/json",
-      })
-        .then((response) => response.json())
-        .then((d) => {
-          let routeStations = d.Data;
-          if (d.Code == 404) {
-            if (destinationStation != null) {
-              console.log(data);
-              fetch(`http://${IP}:8080/api/schedule/GetUpcomingSpecialBus`, {
-                method: "POST",
-                body: JSON.stringify(data),
-                type: "application/json",
-              })
-                .then((response) => response.json())
-                .then((data) => {
-                  if (data.Data == null) {
-                    return;
-                  }
-
-                  const uniqueElements = new Set(
-                    data.Data.map((obj) => obj.source_name)
-                  );
-                  const uniqueArray = Array.from(uniqueElements).map((id) =>
-                    data.Data.find((obj) => obj.source_name === id)
-                  );
-
-                  console.log(data.Data);
-                  setSpecialStationRoutes(data.Data);
-                });
-            } else {
-              setCurrentStationRoutesError("No bus found");
-            }
-          } else if (data.Code == 500) {
-            setCurrentStationRoutesError(data.Message);
-
-            console.log("SOCKET EMITTED");
-            socket.emit("sourceSelected", []);
-          } else {
-            let time = new Date();
-            let updatedData = routeStations.map((info) => {
-              return {
-                ...info,
-                departure_time: info.departure_time.substr(11, 5),
-                sourceName: getStationInfoById(info.source, stationsMap).name,
-                destinationName: getStationInfoById(
-                  info.destination,
-                  stationsMap
-                ).name,
-                last_updated: time.getHours() + ":" + time.getMinutes(),
-              };
-            });
-
-            setCurrentStationRoutes(updatedData);
-
-            let routes = new Set();
-            updatedData.forEach((element) => {
-              routes.add(element.route_id);
-            });
-
-            let routesArray = [];
-            routes.forEach((route) => routesArray.push(route));
-
-            socket.emit("sourceSelected", routesArray);
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching stations data:", error);
-        });
+     
+      fetchAllRoutes(data,destinationStation,getStationInfoById,stationsMap,setCurrentStationRoutes,setSpecialStationRoutes);
+ 
     }
+
+    setCurrentBuses([]);
   }, [sourceStation, destinationStation, stations]);
 
   useEffect(() => {
@@ -241,7 +174,7 @@ const ClientMap = () => {
       });
 
     socket.on("roomJoined", (data) => {
-      console.log("Room joined", data);
+      // console.log("Room joined", data);
     });
 
     return () => {
@@ -316,110 +249,19 @@ const ClientMap = () => {
           </div>
 
           {currentStationRoutes.length != 0 ? (
-            <div id="route-info-wrapper">
-              <center>
-                <h1 className="text-purple-600 text-xl text-center rounded-sm">
-                  Bus Routes
-                </h1>
-                <hr className="my-2 bg-purple-200"></hr>
-                <table id="route-info">
-                  <tbody>
-                    {!currentStationRoutes && (
-                      <div>Stations Data Not Loaded</div>
-                    )}
-                    {currentStationRoutes &&
-                      currentStationRoutes.map((currentStationRoute, index) => (
-                        <tr
-                          key={index}
-                          onClick={() => selectBus(currentStationRoute)}
-                        >
-                          <td>{index + 1}</td>
-                          <td className="text-lg w-4/12">
-                            {currentStationRoute.sourceName}
-                          </td>
-                          <td>
-                            <center>
-                              <div className="w-6 h-6 bg-purple-800 text-white p-1 my-1 rounded-md text-xs">
-                                {currentStationRoute.route_name}
-                              </div>
-                              <div className="text-purple-800 text-xs">
-                                Schedule At {currentStationRoute.departure_time}
-                              </div>
-                            </center>
-                          </td>
-                          <td className="text-lg w-4/12">
-                            {currentStationRoute.destinationName}
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
-                <div className="current-station-error">
-                  {currentStationRoutesError}
-                </div>
-              </center>
-            </div>
+            <DirectRoutes
+              currentStationRoutes={currentStationRoutes}
+              selectBus={selectBus}
+              currentStationRoutesError={currentStationRoutesError}
+            />
           ) : (
-            <div id="route-info-wrapper">
-              <center>
-                <h1 className="text-purple-600 text-xl text-center rounded-sm">
-                  Special Routes
-                </h1>
-                <hr className="my-2 bg-purple-200"></hr>
-                <table id="route-info">
-                  <tbody>
-                    {specialStationRoutes &&
-                      specialStationRoutes.map((currentStationRoute, index) => (
-                        <tr key={index}>
-                          <td>
-                            <div className="w-10 h-10 bg-purple-800 text-white p-2 m-2 rounded-lg">
-                              {currentStationRoute.source_route_name}
-                            </div>
-                          </td>
-                          <td>
-                            <div className="text-purple-800 my-2 text-xs">
-                              {`${
-                                getStationInfoById(sourceStation, stationsMap)
-                                  .name
-                              }`}
-                            </div>
-                          </td>
-                          <td>
-                            <div className="my-2 mx-1 w-5">
-                              <img src={arrow} width="30px" />
-                            </div>
-                          </td>
-                          <td>
-                            <div className="text-purple-800 my-2 text-xs font-bold">
-                              {`${currentStationRoute.junction_name}`}
-                            </div>
-                          </td>
-                          <td>
-                            <div className="my-2 mx-1 w-5">
-                              <img src={arrow} width="30px" />
-                            </div>
-                          </td>
-                          <td>
-                            <div className="text-purple-800 my-2 text-xs">
-                              {`${
-                                getStationInfoById(
-                                  destinationStation,
-                                  stationsMap
-                                ).name
-                              }`}
-                            </div>
-                          </td>
-                          <td>
-                            <div className="w-10 h-10 bg-purple-800 text-white p-2 my-2 rounded-lg">
-                              {currentStationRoute.destination_route_name}
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
-              </center>
-            </div>
+            <IndirectRoutes
+              specialStationRoutes={specialStationRoutes}
+              getStationInfoById={getStationInfoById}
+              sourceStation={sourceStation}
+              stationsMap={stationsMap}
+              destinationStation={destinationStation}
+            />
           )}
         </div>
       </div>
