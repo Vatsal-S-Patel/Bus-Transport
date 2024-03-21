@@ -34,20 +34,11 @@ const BusLive = () => {
       formData.status = parseInt(formData.status)
       formData.traffic = parseInt(formData.traffic)
       
-      formData.last_station_order = i%41
-      formData.last_station_name = coords[i%41].location
+
       formData.bus_id = parseInt(busId);
     
 
       formData.route_name = routeName
-      // Function to add Latitude Longitude to form
-      function successCallback(position) {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-        
-        formData.lat = latitude;
-        formData.long = longitude;
-      }
 
       // Error message for Fetching live location of Bus
       function errorCallback(error) {
@@ -55,7 +46,13 @@ const BusLive = () => {
       }
       
       // Fetch the current location
-      navigator.geolocation.watchPosition(successCallback, errorCallback);
+      if (navigator.geolocation){
+        navigator.geolocation.watchPosition((position)=>{
+          formData.lat = position.coords.latitude;
+          formData.long = position.coords.longitude;
+        },errorCallback);
+      }
+      
 
       // Emit the request on update with json Data and RouteId as params work as Rooms to join for client
       console.log(formData);

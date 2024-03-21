@@ -1,7 +1,7 @@
 import IP from "../../IP";
 
 
-export function fetchAllRoutes(data,destinationStation,getStationInfoById,stationsMap,setCurrentStationRoutes,setSpecialStationRoutes) {
+export function fetchAllRoutes(data,destinationStation,getStationInfoById,stationsMap,setCurrentStationRoutes,setSpecialStationRoutes,setCurrentStationRoutesError) {
   fetch(`http://${IP}:8080/api/schedule/GetUpcomingBus`, {
     method: "POST",
     body: JSON.stringify(data),
