@@ -1,8 +1,8 @@
-import e from "cors";
+
 import { useEffect, useState } from "react";
 import coords from "./latlongJSONArray";
 
-const BusLive = () => {
+const BusHome = () => {
   // Usestate to handle the form data
   const [formData, setFormData] = useState({
     last_station_order: 0,
@@ -37,9 +37,16 @@ const BusLive = () => {
       formData.last_station_order = i%41
       formData.last_station_name = coords[i%41].location
       formData.bus_id = parseInt(busId);
-    
+      
+      // Random generated lat long for developer testing
+      // var latitude = 23+Math.random()
+      // var longitude = 72+Math.random()
 
       formData.route_name = routeName
+      formData.lat = coords[(i)%41].latitude;
+      formData.long = coords[(i)%41].longitude;
+
+      i++
       // Function to add Latitude Longitude to form
       function successCallback(position) {
         const latitude = position.coords.latitude;
@@ -56,11 +63,18 @@ const BusLive = () => {
       
       // Fetch the current location
       navigator.geolocation.watchPosition(successCallback, errorCallback);
+      
+      if(i == 41){
+        formData.status = 0
+      }
 
       // Emit the request on update with json Data and RouteId as params work as Rooms to join for client
       console.log(formData);
       socket.emit('update', JSON.stringify(formData), parseInt(routeId))
 
+      if(i==41){
+        clearInterval(clear)
+      }
     }, 5000);
   };
 
@@ -172,4 +186,4 @@ const BusLive = () => {
   );
 };
 
-export default BusLive;
+export default BusHome;
