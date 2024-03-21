@@ -7,6 +7,9 @@ import (
 
 	socketio "github.com/googollee/go-socket.io"
 	"github.com/googollee/go-socket.io/engineio"
+	"github.com/googollee/go-socket.io/engineio/transport"
+	"github.com/googollee/go-socket.io/engineio/transport/polling"
+	"github.com/googollee/go-socket.io/engineio/transport/websocket"
 )
 
 var m = map[string]int{}
@@ -15,7 +18,12 @@ func InitSocket(db *sql.DB) *socketio.Server {
 	server := socketio.NewServer(&engineio.Options{
 		PingInterval: 1 * time.Second,
 		PingTimeout:  10 * time.Second,
-	})
+		Transports: []transport.Transport{
+			websocket.Default,
+			polling.Default,
+		},
+	},
+	)
 
 	listenForConnect(server)
 
@@ -41,7 +49,6 @@ func InitSocket(db *sql.DB) *socketio.Server {
 		fmt.Println("socket is listening")
 		server.Serve()
 		defer server.Close()
-
 	}()
 
 	return server

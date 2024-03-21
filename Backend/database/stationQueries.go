@@ -8,14 +8,14 @@ import (
 )
 
 func InsertStation(db *sql.DB, station model.Station) error {
-	sqlStatement := `INSERT INTO transport.station (id, name, lat, long) VALUES ($1, $2, $3, $4)`
-
-	_, err := db.Exec(sqlStatement, station.Id, station.Name, station.Lat, station.Long)
+	sqlStatement,err := db.Prepare(`INSERT INTO transport.station (id, name, lat, long) VALUES ($1, $2, $3, $4)`)
 	if err != nil {
 		return err
 	}
+	defer sqlStatement.Close()
 
-	return nil
+	_, err = sqlStatement.Exec(station.Id, station.Name, station.Lat, station.Long)
+	return err
 }
 
 func GetAllStation(db *sql.DB) ([]model.Station, error) {
@@ -44,7 +44,11 @@ func GetAllStation(db *sql.DB) ([]model.Station, error) {
 }
 
 func DeleteStation(db *sql.DB, id string) error {
-	sqlStatement := `DELETE FROM transport.station WHERE id=$1`
+	sqlStatement,err := db.Prepare(`DELETE FROM transport.station WHERE id=$1`)
+	if err != nil {
+		return err
+	}
+	defer sqlStatement.Close()
 
 	newId, err := strconv.Atoi(id)
 	if err != nil {
@@ -52,10 +56,6 @@ func DeleteStation(db *sql.DB, id string) error {
 		return err
 	}
 
-	_, err = db.Exec(sqlStatement, newId)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	_, err = sqlStatement.Exec(newId)
+	return err
 }

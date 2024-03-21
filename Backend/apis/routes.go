@@ -51,7 +51,6 @@ func (app *App) InitializeRoutes() *mux.Router {
 	server := socket.InitSocket(app.controller.DB)
 
 	r.Handle("/socket.io/", server)
-	r.Handle("/", http.FileServer(http.Dir("./asset")))
 
 	return r
 
@@ -72,7 +71,7 @@ func corsMiddleware(next http.Handler) http.Handler {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
-
+		// w.Header().Del("Origin")
 		// Call the next handler
 		next.ServeHTTP(w, r)
 

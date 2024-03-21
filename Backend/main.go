@@ -5,6 +5,7 @@ import (
 	"busproject/configs"
 	"busproject/database"
 	"errors"
+	"flag"
 	"log"
 	"net/http"
 
@@ -12,6 +13,9 @@ import (
 )
 
 func main() {
+	var debug bool
+	flag.BoolVar(&debug,"debug",false,"start server in debug mode")
+	flag.Parse()
 
 	err := configs.ReadEnv()
 	if err != nil {
@@ -19,6 +23,14 @@ func main() {
 		return
 	}
 
+	if debug{
+		err := configs.SetEnv("debug","true")
+		if err != nil {
+			log.Println(err)
+			return
+		}
+	}
+	
 	db, err := database.ConnectDB()
 	if err != nil {
 		log.Println("ERROR: DB Connection Error", err)
