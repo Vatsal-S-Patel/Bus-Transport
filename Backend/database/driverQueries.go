@@ -8,14 +8,14 @@ import (
 )
 
 func InsertDriver(db *sql.DB, driver model.Driver) error {
-	sqlStatement := `INSERT INTO transport.driver (name, phone, gender, dob) VALUES ($1, $2, $3, $4)`
-
-	_, err := db.Exec(sqlStatement, driver.Name, driver.Phone, driver.Gender, driver.Dob)
+	sqlStatement,err :=db.Prepare(`INSERT INTO transport.driver (name, phone, gender, dob) VALUES ($1, $2, $3, $4)`)
 	if err != nil {
 		return err
 	}
+	defer sqlStatement.Close()
 
-	return nil
+	_, err = sqlStatement.Exec(driver.Name, driver.Phone, driver.Gender, driver.Dob)
+	return err
 }
 
 func GetAllDriver(db *sql.DB) ([]model.Driver, error) {
@@ -33,7 +33,6 @@ func GetAllDriver(db *sql.DB) ([]model.Driver, error) {
 
 		err := res.Scan(&driver.Id, &driver.Name, &driver.Phone, &driver.Gender, &driver.Dob)
 		if err != nil {
-			log.Println(err.Error())
 			return nil, err
 		}
 		
@@ -45,7 +44,11 @@ func GetAllDriver(db *sql.DB) ([]model.Driver, error) {
 }
 
 func DeleteDriver(db *sql.DB, id string) error {
-	sqlStatement := `DELETE FROM transport.driver WHERE id=$1`
+	sqlStatement,err := db.Prepare(`DELETE FROM transport.driver WHERE id=$1`)
+	if err != nil {
+		return err
+	}
+	defer sqlStatement.Close()
 
 	newId, err := strconv.Atoi(id)
 	if err != nil {
@@ -53,10 +56,6 @@ func DeleteDriver(db *sql.DB, id string) error {
 		return err
 	}
 
-	_, err = db.Exec(sqlStatement, newId)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	_, err = sqlStatement.Exec(newId)
+	return err
 }

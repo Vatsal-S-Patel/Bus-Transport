@@ -8,14 +8,14 @@ import (
 )
 
 func InsertBus(db *sql.DB, bus model.Bus) error {
-	sqlStatement := `INSERT INTO transport.bus (registration_number, model, capacity) VALUES ($1, $2, $3)`
-
-	_, err := db.Exec(sqlStatement, bus.RegistrationNumber, bus.Model, bus.Capacity)
+	sqlStatement,err := db.Prepare(`INSERT INTO transport.bus (registration_number, model, capacity) VALUES ($1, $2, $3)`)
 	if err != nil {
 		return err
 	}
+	defer sqlStatement.Close()
 
-	return nil
+	_, err = sqlStatement.Exec(bus.RegistrationNumber, bus.Model, bus.Capacity)
+	return err
 }
 
 func GetAllBus(db *sql.DB) ([]model.Bus, error) {
@@ -44,7 +44,11 @@ func GetAllBus(db *sql.DB) ([]model.Bus, error) {
 }
 
 func DeleteBus(db *sql.DB, id string) error {
-	sqlStatement := `DELETE FROM transport.bus WHERE id=$1`
+	sqlStatement,err := db.Prepare(`DELETE FROM transport.bus WHERE id=$1`)
+	if err != nil{
+		return err
+	}
+	defer sqlStatement.Close()
 	
 	newId, err := strconv.Atoi(id)
 	if err != nil {
@@ -52,27 +56,30 @@ func DeleteBus(db *sql.DB, id string) error {
 		return err
 	}
 
-	_, err = db.Exec(sqlStatement, newId)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	_, err = sqlStatement.Exec(newId)
+	return err
 }
 
 // this functions will only be invoked by socket only...
 func UpdateLiveBus(db *sql.DB, data model.BusStatus) error {
 
-	sqlQuery := `INSERT INTO transport.busstatus(bus_id,lat,long,last_updated,traffic,status,last_station_order) VALUES($1,$2,$3,$4,$5,$6,$7) ON CONFLICT (bus_id) DO UPDATE SET lat = $2,long = $3,last_updated = $4,traffic = $5,status = $6,last_station_order = $7`
-	_, err := db.Exec(sqlQuery, data.BusId, data.Lat, data.Long, data.LastUpdated, data.Status, data.Status, data.LastStationOrder)
-	return err
+	sqlStatement,err:= db.Prepare(`INSERT INTO transport.busstatus(bus_id,lat,long,last_updated,traffic,status,last_station_order) VALUES($1,$2,$3,$4,$5,$6,$7) ON CONFLICT (bus_id) DO UPDATE SET lat = $2,long = $3,last_updated = $4,traffic = $5,status = $6,last_station_order = $7`)
+	if err != nil{
+		return nil
+	}
+	defer sqlStatement.Close()
 
+	_, err = sqlStatement.Exec(data.BusId, data.Lat, data.Long, data.LastUpdated, data.Status, data.Status, data.LastStationOrder)
+	return err
 }
 
 func ChangeBusStatus(db *sql.DB,busid int,status int)error{
-	
-	sqlQuery := `UPDATE transport.busstatus SET status = $1 WHERE bus_id = $2`
-	_,err := db.Exec(sqlQuery,status,busid)
-	return err
+	sqlStatement,err :=db.Prepare(`UPDATE transport.busstatus SET status = $1 WHERE bus_id = $2`)
+	if err != nil {
+		return err
+	}
+	defer sqlStatement.Close()
 
+	_,err = sqlStatement.Exec(status,busid)
+	return err
 }

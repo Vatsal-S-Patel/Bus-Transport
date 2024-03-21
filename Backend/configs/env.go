@@ -11,6 +11,7 @@ var envMap map[string]string
 var (
 	ErrFileNotExist = errors.New("we can't found the env file")
 	ErrDataNotExist = errors.New("env file is available but asked data is not there")
+	ErrEmptyEnvFile = errors.New("env file exist but no content found")
 )
 
 func ReadEnv() error {
@@ -21,6 +22,14 @@ func ReadEnv() error {
 	}
 	envMap = m
 
+	return nil
+}
+
+func SetEnv(key, val string) error {
+	if envMap == nil {
+		return ErrEmptyEnvFile
+	}
+	envMap[key] = val
 	return nil
 }
 
