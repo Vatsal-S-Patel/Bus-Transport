@@ -78,20 +78,20 @@ func GetUpcomingBus(db *sql.DB, source, destination int) ([]model.UpcomingBus, e
 	var err error
 
 	if destination == 0 {
-		sqlStatement,err = db.Prepare(`SELECT f.bus_id,route_id,route_name,source,destination,departure_time,b.lat,b.long,b.last_station_order,b.status,b.traffic 
+		sqlStatement, err = db.Prepare(`SELECT f.bus_id,route_id,route_name,source,destination,departure_time,b.lat,b.long,b.last_station_order,b.status,b.traffic 
 							FROM (SELECT bus_id,route_id,route_name,source,destination,departure_time,station_order 
 								FROM bustransportsystem WHERE station_id = $1 AND status = 1) AS f 
 									LEFT JOIN 
 								transport.busstatus AS b ON f.bus_id = b.bus_id 
-									WHERE (b.status = 0 AND departure_time >= CURRENT_TIME) OR (b.status = 1 AND b.last_station_order <= f.station_order) 
+									WHERE (b.status = 0) OR (b.status = 1 AND b.last_station_order <= f.station_order) 
 										ORDER BY departure_time ASC;`)
 		if err != nil {
-			return []model.UpcomingBus{},err
+			return []model.UpcomingBus{}, err
 		}
 		defer sqlStatement.Close()
 		result, err = sqlStatement.Query(source)
 	} else {
-		sqlStatement,err = db.Prepare(`SELECT o.bus_id,route_id,route_name,source,destination,departure_time,b.lat,b.long,b.last_station_order,b.status,b.traffic 
+		sqlStatement, err = db.Prepare(`SELECT o.bus_id,route_id,route_name,source,destination,departure_time,b.lat,b.long,b.last_station_order,b.status,b.traffic 
 							FROM (SELECT s.bus_id,s.route_id,s.route_name,s.source,s.destination,s.departure_time 
 								FROM (SELECT * FROM bustransportsystem 
 									WHERE station_id = $1 AND status = 1) AS f 
@@ -102,10 +102,10 @@ func GetUpcomingBus(db *sql.DB, source, destination int) ([]model.UpcomingBus, e
 										WHERE f.bus_id = s.bus_id AND f.station_order < s.station_order) AS o 
 								LEFT JOIN transport.busstatus AS b 
 									ON o.bus_id = b.bus_id 
-										WHERE b.status = 1 OR (b.status = 0 AND departure_time >= CURRENT_TIME) 
+										WHERE b.status = 1 OR (b.status = 0) 
 										ORDER BY departure_time ASC;`)
 		if err != nil {
-			return []model.UpcomingBus{},err
+			return []model.UpcomingBus{}, err
 		}
 		defer sqlStatement.Close()
 		result, err = sqlStatement.Query(source, destination)
@@ -141,7 +141,7 @@ func GetUpcomingSpecialBus(db *sql.DB, source, destination int) ([]model.Upcomin
 	var err error
 	var SrcDestMap = map[int]int{}
 
-	sqlStatement,err = db.Prepare(`SELECT * FROM (SELECT v3.route_id AS sourceRoute,v3.route_name AS sourceRouteName,v3.station_id AS junctionStation,v3.station_name AS junctionName,v3.station_order AS junctionOrder,v3.myOrder,v4.route_id AS destinationRoute,v4.route_name AS destinationRouteName 
+	sqlStatement, err = db.Prepare(`SELECT * FROM (SELECT v3.route_id AS sourceRoute,v3.route_name AS sourceRouteName,v3.station_id AS junctionStation,v3.station_name AS junctionName,v3.station_order AS junctionOrder,v3.myOrder,v4.route_id AS destinationRoute,v4.route_name AS destinationRouteName 
 					FROM (SELECT v1.route_id,v1.route_name,v2.station_id,v2.station_name,v2.station_order,v1.myOrder 
 					FROM (SELECT route_id,station_id,route_name,station_name,station_order AS myOrder FROM bustransportsystem WHERE station_id = $1) AS v1 
 						 INNER JOIN 
@@ -158,7 +158,7 @@ func GetUpcomingSpecialBus(db *sql.DB, source, destination int) ([]model.Upcomin
 					GROUP BY sourceRoute, sourceRouteName, junctionStation, junctionName, destinationRoute, destinationRouteName, junctionOrder,myOrder) AS q
      				WHERE sourceroute <> destinationroute ORDER BY (junctionOrder - myOrder); `)
 	if err != nil {
-		return []model.UpcomingSpecialBus{},err
+		return []model.UpcomingSpecialBus{}, err
 	}
 	defer sqlStatement.Close()
 
@@ -177,7 +177,7 @@ func GetUpcomingSpecialBus(db *sql.DB, source, destination int) ([]model.Upcomin
 
 	for result.Next() {
 		result.Scan(&dummy.SourceRoute, &dummy.SourceRouteName, &dummy.JunctionStation, &dummy.JunctionName, &dummy.JunctionOrder, &dummy.MyOrder, &dummy.DestinationRoute, &dummy.DestinationRouteName)
-		if v,ok := SrcDestMap[dummy.SourceRoute]; !ok || (ok && v != dummy.DestinationRoute){
+		if v, ok := SrcDestMap[dummy.SourceRoute]; !ok || (ok && v != dummy.DestinationRoute) {
 			SrcDestMap[dummy.SourceRoute] = dummy.DestinationRoute
 			busOutput = append(busOutput, dummy)
 		}
