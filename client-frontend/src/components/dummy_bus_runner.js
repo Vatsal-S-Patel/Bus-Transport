@@ -27,6 +27,7 @@ const BusHome = () => {
     e.preventDefault();
     
     var i = 0;
+    console.log("dfgds")
     // Set the interval to send data to socket after a specific time 
     var clear = setInterval(() => {
       // Add data to send in the socket
@@ -34,40 +35,21 @@ const BusHome = () => {
       formData.status = parseInt(formData.status)
       formData.traffic = parseInt(formData.traffic)
       
-      formData.last_station_order = i%41
+      formData.last_station_order = 1
       formData.last_station_name = coords[i%41].location
       formData.bus_id = parseInt(busId);
       
-      // Random generated lat long for developer testing
-      // var latitude = 23+Math.random()
-      // var longitude = 72+Math.random()
 
       formData.route_name = routeName
       formData.lat = coords[(i)%41].latitude;
       formData.long = coords[(i)%41].longitude;
 
       i++
-      // Function to add Latitude Longitude to form
-      function successCallback(position) {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-        
-        formData.lat = latitude;
-        formData.long = longitude;
-      }
-
-      // Error message for Fetching live location of Bus
-      function errorCallback(error) {
-        console.error("Error getting current location:", error.message);
-      }
-      
-      // Fetch the current location
-      navigator.geolocation.watchPosition(successCallback, errorCallback);
       
       if(i == 41){
         formData.status = 0
       }
-
+      console.log(coords[(i)%41].latitude)
       // Emit the request on update with json Data and RouteId as params work as Rooms to join for client
       console.log(formData);
       socket.emit('update', JSON.stringify(formData), parseInt(routeId))
