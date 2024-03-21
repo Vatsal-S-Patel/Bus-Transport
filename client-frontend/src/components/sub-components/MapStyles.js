@@ -79,7 +79,7 @@ export function getCurrentLocationStyle(user) {
         height: 40,
       }),
       text: new Text({
-        text: `${route} \n ${last}`,
+        text: `${route}`,
         offsetY: -20,
         fill: new Fill({
           color: "#000",

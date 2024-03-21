@@ -9,7 +9,7 @@ import BusRouteHandle from './components/bus_route_handle';
 import ScheduleHandle from './components/schedule_handle';
 import DriverHandle from './components/driver_handle';
 import StationHandle from './components/station_handle';
-import BusHome from './components/live_location_bus';
+import BusHome from './components/dummy_bus_runner';
 import ClientMap from "./components/ClientMap";
 import BusLive from "./components/live_location_bus";
 

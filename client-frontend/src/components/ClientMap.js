@@ -148,7 +148,7 @@ const ClientMap = () => {
       setCurrentStationRoutesError(null);
 
      
-      fetchAllRoutes(data,destinationStation,getStationInfoById,stationsMap,setCurrentStationRoutes,setSpecialStationRoutes);
+      fetchAllRoutes(data,destinationStation,getStationInfoById,stationsMap,setCurrentStationRoutes,setSpecialStationRoutes,setCurrentStationRoutesError);
  
     }
 
