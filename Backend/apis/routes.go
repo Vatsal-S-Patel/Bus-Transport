@@ -71,7 +71,7 @@ func corsMiddleware(next http.Handler) http.Handler {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
-		w.Header().Del("Origin")
+		// w.Header().Del("Origin")
 		// Call the next handler
 		next.ServeHTTP(w, r)
 
