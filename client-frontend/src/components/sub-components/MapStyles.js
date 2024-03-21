@@ -2,9 +2,9 @@ import Style from "ol/style/Style";
 import Icon from "ol/style/Icon";
 import Text from "ol/style/Text";
 import Fill from "ol/style/Fill";
-import stationIcon from "../images/bus_image2.png";
-import busIcon from "../images/image.png";
-import currentLocationIcon from "../current_location.svg";
+import stationIcon from "../../images/bus_image2.png";
+import busIcon from "../../images/image.png";
+import currentLocationIcon from "../../current_location.svg";
 
 
 export function getHighlightedStyle({ stationId, stationName, showText }) {
@@ -67,12 +67,7 @@ export function getCurrentLocationStyle(user) {
 
  export function getBusStyle(route,status,last) {
   // console.log(route,status,last);
-  if(status == 0) {
-    status = "🛠️"
-  }
-  else if(status == 1) {
-    status = "✔"
-  }
+  
   if (last.length > 15 ){
     last = last.substring(0,12)+"..."
   }
@@ -84,7 +79,7 @@ export function getCurrentLocationStyle(user) {
         height: 40,
       }),
       text: new Text({
-        text: `${route}  ${status} \n ${last}`,
+        text: `${route} \n ${last}`,
         offsetY: -20,
         fill: new Fill({
           color: "#000",
