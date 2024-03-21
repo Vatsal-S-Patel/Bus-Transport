@@ -7,24 +7,20 @@ import (
 )
 
 func InsertRouteStation(db *sql.DB, routeStation model.RouteStation) error {
-	sqlStatement := `INSERT INTO transport.routestations (route_id, station_id, station_order) VALUES ($1, $2, $3)`
-
-	_, err := db.Exec(sqlStatement, routeStation.RouteId, routeStation.StationId, routeStation.StationOrder)
+	sqlStatement,err :=db.Prepare(`INSERT INTO transport.routestations (route_id, station_id, station_order) VALUES ($1, $2, $3)`)
 	if err != nil {
 		return err
 	}
+	defer sqlStatement.Close()
 
-	return nil
+	_, err = sqlStatement.Exec(routeStation.RouteId, routeStation.StationId, routeStation.StationOrder)
+	return err
 }
 
 func InsertAllRouteStation(db *sql.DB, sqlStatement string) error {
 
 	_, err := db.Exec(sqlStatement[:len(sqlStatement)-1] + ";")
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 func GetAllRouteStation(db *sql.DB) ([]model.RouteStation, error) {
