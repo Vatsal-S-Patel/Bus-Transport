@@ -2,13 +2,13 @@ import React, { useEffect, useState, useRef } from "react";
 import "ol/ol.css";
 import "../App.js";
 import MapComponent from "./MapComponent.js";
-import resetIcon from "../images/reset-svgrepo-com.svg"
-import backIcon from "../images/backward-3-svgrepo-com.svg"
+import resetIcon from "../images/reset-svgrepo-com.svg";
+import backIcon from "../images/backward-3-svgrepo-com.svg";
 import IP from "../IP.js";
-
+import arrow from "../images/right-arrow.png";
 
 /* Initially get all stations information then no need to bother api about this. */
-export function getStationInfoById(stationId, stationsMap) {
+function getStationInfoById(stationId, stationsMap) {
   // see if id present then give name
   if (stationsMap.has(Number(stationId))) {
     return stationsMap.get(Number(stationId));
@@ -30,11 +30,11 @@ const ClientMap = () => {
 
   // After selecting source and destination we will show user below information
   const [currentStationRoutes, setCurrentStationRoutes] = useState([]);
-  const [currentStationRoutesError, setCurrentStationRoutesError] = useState(null);
+  const [currentStationRoutesError, setCurrentStationRoutesError] =
+    useState(null);
   const [specialStationRoutes, setSpecialStationRoutes] = useState([]);
 
   const [currentBuses, setCurrentBuses] = useState([]);
-  
 
   const sourceStationRef = useRef();
   const destinationStationRef = useRef();
@@ -59,11 +59,11 @@ const ClientMap = () => {
   };
 
   const resetSelections = () => {
-    let btn = document.querySelector(".reset-selection-btn")
-    btn.style.rotate = "360deg"
+    let btn = document.querySelector(".reset-selection-btn");
+    btn.style.rotate = "360deg";
 
     setTimeout(() => {
-     btn.style.rotate = "0deg"
+      btn.style.rotate = "0deg";
     }, 1000);
 
     setSourceStation(null);
@@ -76,6 +76,7 @@ const ClientMap = () => {
 
     setCurrentBuses([]);
     setCurrentStationRoutes([]);
+    setSpecialStationRoutes([]);
     setCurrentStationRoutesError("Not Selected");
   };
 
@@ -104,16 +105,16 @@ const ClientMap = () => {
     });
 
     socket.on("update", (busInfo) => {
-      console.log("UPDATE CAME", busInfo)
+      console.log("UPDATE CAME", busInfo);
       // Check Already array me he ki nahi
       let isAlreadyBusDisplayed = false;
-      
+
       currentBuses.map((bus) => {
         if (bus.bus_id == busInfo.bus_id) {
           isAlreadyBusDisplayed = true;
         }
       });
-     
+
       if (isAlreadyBusDisplayed) {
         // Update this information
         let newArray = currentBuses.map((bus) =>
@@ -126,7 +127,7 @@ const ClientMap = () => {
         setCurrentBuses(newArray);
       } else {
         // Append this information
-        setCurrentBuses([...currentBuses , busInfo])
+        setCurrentBuses([...currentBuses, busInfo]);
       }
     });
 
@@ -136,7 +137,7 @@ const ClientMap = () => {
   // fetch route infomation when sourcestation adn destination station changes
   useEffect(() => {
     setCurrentBuses([]);
-    
+
     if (sourceStation != null) {
       let data = {};
       data["source"] = Number(sourceStation);
@@ -154,36 +155,41 @@ const ClientMap = () => {
       })
         .then((response) => response.json())
         .then((d) => {
-          let routeStations = data.Data;
-          if(d.Code == 404){
-            if(destinationStation != null){
-              console.log(data)
+          let routeStations = d.Data;
+          if (d.Code == 404) {
+            if (destinationStation != null) {
+              console.log(data);
               fetch(`http://${IP}:8080/api/schedule/GetUpcomingSpecialBus`, {
                 method: "POST",
                 body: JSON.stringify(data),
                 type: "application/json",
-              }).then((response) => response.json())
-              .then((data) => {
-                if(data.Data == null){
-                  return
-                }
-                
-                const uniqueElements = new Set(data.Data.map((obj)=>obj.source_name));
-                const uniqueArray = Array.from(uniqueElements).map(id => data.Data.find(obj => obj.source_name === id));
-              
-                setSpecialStationRoutes(uniqueArray);
               })
+                .then((response) => response.json())
+                .then((data) => {
+                  if (data.Data == null) {
+                    return;
+                  }
+
+                  const uniqueElements = new Set(
+                    data.Data.map((obj) => obj.source_name)
+                  );
+                  const uniqueArray = Array.from(uniqueElements).map((id) =>
+                    data.Data.find((obj) => obj.source_name === id)
+                  );
+
+                  console.log(data.Data);
+                  setSpecialStationRoutes(data.Data);
+                });
             } else {
-              setCurrentStationRoutesError("No bus found")
+              setCurrentStationRoutesError("No bus found");
             }
-          }
-          else if (data.Code == 500) {
+          } else if (data.Code == 500) {
             setCurrentStationRoutesError(data.Message);
 
             console.log("SOCKET EMITTED");
             socket.emit("sourceSelected", []);
           } else {
-            let time = new Date()
+            let time = new Date();
             let updatedData = routeStations.map((info) => {
               return {
                 ...info,
@@ -193,13 +199,10 @@ const ClientMap = () => {
                   info.destination,
                   stationsMap
                 ).name,
-                last_updated: time.getHours() + ":"+time.getMinutes(),
+                last_updated: time.getHours() + ":" + time.getMinutes(),
               };
             });
 
-            // If it has lat long then add this bus to current buses
-            // it let all the buses have lat long
-            
             setCurrentStationRoutes(updatedData);
 
             let routes = new Set();
@@ -263,112 +266,161 @@ const ClientMap = () => {
       <div
         className={`side-bar ${expanded ? "expanded-view" : "shrink-view"}  `}
       >
-       <div className="top-bar">
-       <button className="expand-shrink-btn" onClick={expandShrinkView}>
-          {expanded ? 
-          <img className="translate-img" src={backIcon}></img>
-          : 
-          <img src={backIcon}></img>}
-        </button>
+        <div className="top-bar">
+          <button className="expand-shrink-btn" onClick={expandShrinkView}>
+            {expanded ? (
+              <img className="translate-img" src={backIcon}></img>
+            ) : (
+              <img src={backIcon}></img>
+            )}
+          </button>
 
-        <button className={`reset-selection-btn`} onClick={resetSelections}>
-          <img src={resetIcon}></img>
-        </button>
-       </div>
+          <button className={`reset-selection-btn`} onClick={resetSelections}>
+            <img src={resetIcon}></img>
+          </button>
+        </div>
 
         <div className="side-bar-content">
-        <div className="input-div">
-          <label>Source</label>
-          <select
-            id="source"
-            value={sourceStation!=null ? sourceStation : ""}
-            onChange={(e) => handleSourceChange(e.target.value)}
-          >
-            <option value={null}>NOT SELECTED</option>
-            {stations.map((station) => (
-              <option key={station.id} value={station.id}>
-                {station.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="input-div">
-          <label>Destination</label>
-          <select
-            id="destination"
-            value={destinationStation!=null ? destinationStation : ""}
-            onChange={(e) => handleDestinationChange(e.target.value)}
-          >
-            <option key={null} value={null}>
-              NOT SELECTED
-            </option>
-            {stations.map((station) => (
-              <option key={station.id} value={station.id}>
-                {station.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        {currentBuses.length != 0 
-          ?
-          <div id="route-info-wrapper">
-            <table id="route-info">
-              <thead>
-                <tr>
-                  <th>ROUTE</th>
-                  <th>SOURCE</th>
-                  <th>DESTINATION</th>
-                  <th>DEPARTURE TIME</th>
-                </tr>
-              </thead>
-              <tbody>
-                {!currentStationRoutes && <div>Stations Data Not Loaded</div>}
-                {currentStationRoutes &&
-                  currentStationRoutes.map((currentStationRoute, index) => (
-                    <tr
-                      key={index}
-                      onClick={() => selectBus(currentStationRoute)}
-                    >
-                      <td>{currentStationRoute.route_name}</td>
-                      <td>{currentStationRoute.sourceName}</td>
-                      <td>{currentStationRoute.destinationName}</td>
-                      <td>{currentStationRoute.departure_time}</td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-            <div className="current-station-error">
-              {currentStationRoutesError}
-            </div>
+          <div className="input-div">
+            <label>Source</label>
+            <select
+              id="source"
+              value={sourceStation != null ? sourceStation : ""}
+              onChange={(e) => handleSourceChange(e.target.value)}
+            >
+              <option value={null}>NOT SELECTED</option>
+              {stations.map((station) => (
+                <option key={station.id} value={station.id}>
+                  {station.name}
+                </option>
+              ))}
+            </select>
           </div>
-          :
-         <div id="route-info-wrapper">
-          <table id="route-info">
-            <thead>
-              <tr>
-                <th>Starts</th>
-                <th>Junction</th>
-                <th>Ends</th>
-              </tr>
-            </thead>
-            <tbody>
-              {specialStationRoutes &&
-                specialStationRoutes.map((currentStationRoute, index) => (
-                  <tr
-                    key={index}
-                  >
-                    <td>{currentStationRoute.source_route_name}</td>
-                    <td>{currentStationRoute.junction_name}</td>
-                    <td>{currentStationRoute.destination_route_name}</td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
-         }
-        
-        
+
+          <div className="input-div">
+            <label>Destination</label>
+            <select
+              id="destination"
+              value={destinationStation != null ? destinationStation : ""}
+              onChange={(e) => handleDestinationChange(e.target.value)}
+            >
+              <option key={null} value={null}>
+                NOT SELECTED
+              </option>
+              {stations.map((station) => (
+                <option key={station.id} value={station.id}>
+                  {station.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {currentStationRoutes.length != 0 ? (
+            <div id="route-info-wrapper">
+              <center>
+                <h1 className="text-purple-600 text-xl text-center rounded-sm">
+                  Bus Routes
+                </h1>
+                <hr className="my-2 bg-purple-200"></hr>
+                <table id="route-info">
+                  <tbody>
+                    {!currentStationRoutes && (
+                      <div>Stations Data Not Loaded</div>
+                    )}
+                    {currentStationRoutes &&
+                      currentStationRoutes.map((currentStationRoute, index) => (
+                        <tr
+                          key={index}
+                          onClick={() => selectBus(currentStationRoute)}
+                        >
+                          <td>{index + 1}</td>
+                          <td className="text-lg w-4/12">
+                            {currentStationRoute.sourceName}
+                          </td>
+                          <td>
+                            <center>
+                              <div className="w-6 h-6 bg-purple-800 text-white p-1 my-1 rounded-md text-xs">
+                                {currentStationRoute.route_name}
+                              </div>
+                              <div className="text-purple-800 text-xs">
+                                Schedule At {currentStationRoute.departure_time}
+                              </div>
+                            </center>
+                          </td>
+                          <td className="text-lg w-4/12">
+                            {currentStationRoute.destinationName}
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+                <div className="current-station-error">
+                  {currentStationRoutesError}
+                </div>
+              </center>
+            </div>
+          ) : (
+            <div id="route-info-wrapper">
+              <center>
+                <h1 className="text-purple-600 text-xl text-center rounded-sm">
+                  Special Routes
+                </h1>
+                <hr className="my-2 bg-purple-200"></hr>
+                <table id="route-info">
+                  <tbody>
+                    {specialStationRoutes &&
+                      specialStationRoutes.map((currentStationRoute, index) => (
+                        <tr key={index}>
+                          <td>
+                            <div className="w-10 h-10 bg-purple-800 text-white p-2 m-2 rounded-lg">
+                              {currentStationRoute.source_route_name}
+                            </div>
+                          </td>
+                          <td>
+                            <div className="text-purple-800 my-2 text-xs">
+                              {`${
+                                getStationInfoById(sourceStation, stationsMap)
+                                  .name
+                              }`}
+                            </div>
+                          </td>
+                          <td>
+                            <div className="my-2 mx-1 w-5">
+                              <img src={arrow} width="30px" />
+                            </div>
+                          </td>
+                          <td>
+                            <div className="text-purple-800 my-2 text-xs font-bold">
+                              {`${currentStationRoute.junction_name}`}
+                            </div>
+                          </td>
+                          <td>
+                            <div className="my-2 mx-1 w-5">
+                              <img src={arrow} width="30px" />
+                            </div>
+                          </td>
+                          <td>
+                            <div className="text-purple-800 my-2 text-xs">
+                              {`${
+                                getStationInfoById(
+                                  destinationStation,
+                                  stationsMap
+                                ).name
+                              }`}
+                            </div>
+                          </td>
+                          <td>
+                            <div className="w-10 h-10 bg-purple-800 text-white p-2 my-2 rounded-lg">
+                              {currentStationRoute.destination_route_name}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </center>
+            </div>
+          )}
         </div>
       </div>
     </div>
