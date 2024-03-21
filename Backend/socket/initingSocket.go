@@ -19,8 +19,8 @@ func InitSocket(db *sql.DB) *socketio.Server {
 		PingInterval: 1 * time.Second,
 		PingTimeout:  10 * time.Second,
 		Transports: []transport.Transport{
-			polling.Default,
 			websocket.Default,
+			polling.Default,
 		},
 	},
 	)
