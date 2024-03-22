@@ -8,15 +8,19 @@ import (
 )
 
 func InsertBus(db *sql.DB, bus model.Bus) error {
-	sqlStatement,err := db.Prepare(`INSERT INTO transport.bus (registration_number, model, capacity) VALUES ($1, $2, $3)`)
+	sqlStatement,err := db.Prepare(`INSERT INTO transport.bus (id,registration_number, model, capacity) VALUES ($1, $2, $3,$4)`)
 	if err != nil {
 		return err
 	}
 	defer sqlStatement.Close()
-	UpdateLiveBus(db,model.BusStatus{
+	_, err = sqlStatement.Exec(bus.Id,bus.RegistrationNumber, bus.Model, bus.Capacity)
+	if err != nil {
+		return err
+	}
+	err = UpdateLiveBus(db,model.BusStatus{
 		BusId: bus.Id,
+		LastUpdated: "00:00",
 	})
-	_, err = sqlStatement.Exec(bus.RegistrationNumber, bus.Model, bus.Capacity)
 	return err
 }
 
