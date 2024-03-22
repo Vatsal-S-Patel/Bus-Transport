@@ -13,7 +13,9 @@ func InsertBus(db *sql.DB, bus model.Bus) error {
 		return err
 	}
 	defer sqlStatement.Close()
-
+	UpdateLiveBus(db,model.BusStatus{
+		BusId: bus.Id,
+	})
 	_, err = sqlStatement.Exec(bus.RegistrationNumber, bus.Model, bus.Capacity)
 	return err
 }
@@ -63,13 +65,8 @@ func DeleteBus(db *sql.DB, id string) error {
 // this functions will only be invoked by socket only...
 func UpdateLiveBus(db *sql.DB, data model.BusStatus) error {
 
-	sqlStatement,err:= db.Prepare(`INSERT INTO transport.busstatus(bus_id,lat,long,last_updated,traffic,status,last_station_order) VALUES($1,$2,$3,$4,$5,$6,$7) ON CONFLICT (bus_id) DO UPDATE SET lat = $2,long = $3,last_updated = $4,traffic = $5,status = $6,last_station_order = $7`)
-	if err != nil{
-		return nil
-	}
-	defer sqlStatement.Close()
-
-	_, err = sqlStatement.Exec(data.BusId, data.Lat, data.Long, data.LastUpdated, data.Status, data.Status, data.LastStationOrder)
+	sqlStatement:= `INSERT INTO transport.busstatus(bus_id,lat,long,last_updated,traffic,status,last_station_order) VALUES($1,$2,$3,$4,$5,$6,$7) ON CONFLICT (bus_id) DO UPDATE SET lat = $2,long = $3,last_updated = $4,traffic = $5,status = $6,last_station_order = $7`
+	_, err := db.Exec(sqlStatement,data.BusId, data.Lat, data.Long, data.LastUpdated, data.Status, data.Status, data.LastStationOrder)
 	return err
 }
 
