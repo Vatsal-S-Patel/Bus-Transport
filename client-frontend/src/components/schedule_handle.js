@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import IP from "../IP";
 import { useNavigate } from "react-router-dom";
+import { CustomizeTable } from "./sub-components/table_for_data";
 
 const ScheduleHandle = () => {
   // States to manage Form Data and Schedule Data from Server
@@ -177,67 +178,7 @@ const ScheduleHandle = () => {
         />
       </center>
 
-      <div className="mt-8">
-        <hr></hr>
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Schedule ID
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Bus ID
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Route ID
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Time
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {schedules != undefined ? schedules.map((schedule, index) => (
-              <tr key={schedule.id}>
-                <td className="px-6 py-4 whitespace-nowrap">{schedule.id}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {schedule.bus_id}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {schedule.route_id}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">{schedule.dep}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <button
-                    onDoubleClick={() => handleDelete(schedule.id, index)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            )):""}
-          </tbody>
-        </table>
-      </div>
+      <CustomizeTable details={scheduleDetails} handleDelete={handleDelete} items={schedules}/>
     </>
   );
 };
