@@ -131,7 +131,7 @@ const ClientMap = () => {
         setCurrentBuses([...currentBuses, busInfo]);
       }
     });
-
+    
     setCurrentStationRoutes(newArray);
   }, [currentBuses]);
 
