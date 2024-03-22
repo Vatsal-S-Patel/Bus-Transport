@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { json, useNavigate } from "react-router-dom";
 import IP from "../IP";
+import { CustomizeTable } from "./sub-components/table_for_data";
 
 const BusRouteHandle = () => {
   // STATES TO MANAGE THE FORM DATA AND DATA FROM DATABASE
@@ -253,6 +254,7 @@ const BusRouteHandle = () => {
             {station!= undefined ? station.map((s, index) => {
               return (
                 <button
+                  key={index}
                   type="button"
                   onClick={() => {
                     handleStationsInRoute(s.id, s.name);
@@ -274,14 +276,14 @@ const BusRouteHandle = () => {
                 </tr>
               </thead>
               <tbody>
-                {orderStations!= undefined ? orderStations.map((orderStation, index) => (
+                {orderStations != undefined ? orderStations.map((orderStation, index) => (
                   <>
-                    <tr className="p-3" key={index}>
-                      <td className="text-sm m-3">{index + 1}</td>
-                      <td className="text-sm m-3">{orderStation.station}</td>
-                      <td className="m-3">
+                    <tr className="p-3 " key={index}>
+                      <td className="text-sm m-5">{index + 1}</td>
+                      <td className="text-sm m-5">{orderStation.station}</td>
+                      <td className="m-5">
                         <button
-                          className="bg-red-500 text-sm text-white w-full p-1  rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-300"
+                          className="bg-red-500 text-xs text-white w-11/12 p-1 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-300"
                           onClick={() => {
                             handleDeleteStation(orderStation.order);
                           }}
@@ -309,72 +311,7 @@ const BusRouteHandle = () => {
         />
       </center>
 
-      <div className="mt-8">
-        <hr></hr>
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Route ID
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Name
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Source
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Destination
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Status
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {routes.map((route, index) => (
-              <tr key="index">
-                <td className="px-6 py-4 whitespace-nowrap">{route.id}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{route.name}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{route.source}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {route.destination}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">{route.status}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <button
-                    onDoubleClick={() => handleDelete(route.id, index)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <CustomizeTable details={routeDetails} handleDelete={handleDelete} items={routes} isRoute={true}/>
     </div>
   );
 };

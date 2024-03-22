@@ -7,11 +7,11 @@ import backIcon from "../images/backward-3-svgrepo-com.svg";
 import IP from "../IP.js";
 import { IndirectRoutes } from "./sub-components/indirect_route_component.js";
 import { DirectRoutes } from "./sub-components/direct_route_component.js";
-import { fetchAllRoutes } from "./sub-components/fetch_routes_api.js";
+import { FetchStations, fetchAllRoutes } from "./sub-components/fetch_routes_api.js";
 
 /* Initially get all stations information then no need to bother api about this. */
 function getStationInfoById(stationId, stationsMap) {
-  // see if id present then give name
+  // See If ID present then give name
   if (stationsMap.has(Number(stationId))) {
     return stationsMap.get(Number(stationId));
   }
@@ -36,7 +36,7 @@ const ClientMap = () => {
   const [specialStationRoutes, setSpecialStationRoutes] = useState([]);
 
   const [currentBuses, setCurrentBuses] = useState([]);
-
+  // References to source and destination states to Re-Render Map
   const sourceStationRef = useRef();
   const destinationStationRef = useRef();
 
@@ -146,37 +146,20 @@ const ClientMap = () => {
       // Reset Station Routes
       setCurrentStationRoutes([]);
       setCurrentStationRoutesError(null);
-
      
-      fetchAllRoutes(data,destinationStation,getStationInfoById,stationsMap,setCurrentStationRoutes,setSpecialStationRoutes,setCurrentStationRoutesError);
- 
+      fetchAllRoutes(data,destinationStation,getStationInfoById,stationsMap
+        ,setCurrentStationRoutes,setSpecialStationRoutes,setCurrentStationRoutesError);
     }
-
     setCurrentBuses([]);
+
   }, [sourceStation, destinationStation, stations]);
 
   useEffect(() => {
-    fetch(`http://${IP}:8080/api/station/`)
-      .then((response) => response.json())
-      .then((data) => {
-        let stations = data.Data;
-        setStations(stations);
 
-        let mp = new Map();
-        stations.forEach((station) => {
-          mp.set(station.id, station);
-        });
-
-        setStationsMap(mp);
-      })
-      .catch((error) => {
-        console.error("Error fetching stations data:", error);
-      });
-
+    FetchStations(setStations,setStationsMap)
     socket.on("roomJoined", (data) => {
       // console.log("Room joined", data);
     });
-
     return () => {
       socket.close();
     };

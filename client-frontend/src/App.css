@@ -215,6 +215,14 @@
   font-size: 15px;
   color: rgb(94, 94, 94);
 }
+.station{
+  height: 450px;
+  overflow: scroll;
+}
+
+hr{
+  margin: 10px 0px;
+}
 
 .current-station-error {
   font-size: 15px;
