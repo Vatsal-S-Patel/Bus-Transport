@@ -1,6 +1,4 @@
-import e from "cors";
 import { useEffect, useState } from "react";
-import coords from "./latlongJSONArray";
 
 const BusLive = () => {
   // Usestate to handle the form data
@@ -9,11 +7,11 @@ const BusLive = () => {
     last_updated: "",
     traffic: 0,
     status: 0,
+    bus_id : 0
   });
 
   const [routeId,setRouteId] = useState("");
   const [routeName,setRouteName] = useState("");
-  const [busId,setBusId] = useState("");
 
   
   // The function to change state as per the change in the form data
@@ -39,10 +37,10 @@ const BusLive = () => {
       formData.status = parseInt(formData.status)
       formData.traffic = parseInt(formData.traffic)
       
-
-      formData.bus_id = parseInt(busId);
       formData.route_name = routeName
-
+      if(formData.bus_id === ""){
+        formData.bus_id = 0;
+      }
       // Error message for Fetching live location of Bus
       function errorCallback(error) {
         console.error("Error getting current location:", error.message);
@@ -60,6 +58,7 @@ const BusLive = () => {
       // Emit the request on update with json Data and RouteId as params work as Rooms to join for client
       console.log(formData);
       socket.emit('update', JSON.stringify(formData), parseInt(routeId))
+      socket.emit("bus",formData.bus_id)
 
   };
 
@@ -79,10 +78,10 @@ const BusLive = () => {
           </label>
           <input
             type="number"
-            id="last_station_order"
-            name="last_station_order"
-            value={busId}
-            onChange={(e)=>{setBusId(e.target.value)}}
+            id="bus_id"
+            name="bus_id"
+            value={formData.bus_id}
+            onChange={(e)=>{handleChange(e)}}
             className="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300"
             required
           />
@@ -96,8 +95,8 @@ const BusLive = () => {
           </label>
           <input
             type="number"
-            id="last_station_order"
-            name="last_station_order"
+            id="route_id"
+            name="route_id"
             value={routeId}
             onChange={(e)=>{setRouteId(e.target.value)}}
             className="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300"
@@ -113,8 +112,8 @@ const BusLive = () => {
           </label>
           <input
             type="text"
-            id="last_station_order"
-            name="last_station_order"
+            id="route_name"
+            name="route_name"
             value={routeName}
             onChange={(e)=>setRouteName(e.target.value)}
             className="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300"
@@ -133,7 +132,7 @@ const BusLive = () => {
             id="traffic"
             name="traffic"
             value={formData.traffic}
-            onChange={handleChange}
+            onChange={(e)=>(handleChange(e))}
             className="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300"
             required
           />
@@ -149,7 +148,7 @@ const BusLive = () => {
             id="status"
             name="status"
             value={formData.status}
-            onChange={handleChange}
+            onChange={(e)=>{handleChange(e)}}
             className="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300"
             required
           >

@@ -25,7 +25,6 @@
 
     <script src="https://cdn.socket.io/socket.io-1.0.0.js"></script>
     <script>
-      // Connect to socket when the React App Initialized
       var socket = io("http://localhost:8080", { transports: ["polling"] });
       socket.on("connect", () => {
         console.log("Connection established");
@@ -36,7 +35,7 @@
       socket.on("disconnect", () => {
         console.log("Connection Closed");
       });
-      
+
       // Disconnect on Reload
       window.addEventListener('unload', function() {
         socket.close();
