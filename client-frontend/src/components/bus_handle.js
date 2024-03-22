@@ -60,6 +60,11 @@ const BusHandle = () => {
         alert("Success");
         setFilteredBuses([...filteredBuses, busDetails]);
         setAllBuses([...allBuses, busDetails]);
+      }else{
+        res.json().then((d)=>{
+          alert(d)
+          console.log(d)
+        })
       }
     } catch (err) {
       alert(err);
