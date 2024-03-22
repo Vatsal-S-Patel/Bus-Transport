@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import IP from "../IP";
 import { useNavigate } from "react-router-dom";
+import { CustomizeTable } from "./sub-components/table_for_data";
 
 const StationHandle = () => {
   const fetchData = async () => {
@@ -164,63 +165,7 @@ const StationHandle = () => {
         />
       </center>
 
-      <div>
-        <hr></hr>
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                ID
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Name
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Latitude
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Longitude
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {stations!= undefined ? stations.map((station, index) => (
-              <tr key={station.id}>
-                <td className="px-6 py-4 whitespace-nowrap">{station.id}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{station.name}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{station.lat}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{station.long}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <button
-                    onDoubleClick={() => handleDelete(station.id, index)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            )):""}
-          </tbody>
-        </table>
-      </div>
+      <CustomizeTable details={stationDetails} handleDelete={handleDelete} items={stations}/>
     </>
   );
 };

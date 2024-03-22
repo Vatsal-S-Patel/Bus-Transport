@@ -1,7 +1,34 @@
 import IP from "../../IP";
 
+export function FetchStations(setStations,setStationsMap) {
+  // Function to fetch all the stations and set them to states
+  fetch(`http://${IP}:8080/api/station/`)
+    .then((response) => response.json())
+    .then((data) => {
+      let stations = data.Data;
+      setStations(stations);
 
-export function fetchAllRoutes(data,destinationStation,getStationInfoById,stationsMap,setCurrentStationRoutes,setSpecialStationRoutes,setCurrentStationRoutesError) {
+      let mp = new Map();
+      stations.forEach((station) => {
+        mp.set(station.id, station);
+      });
+
+      setStationsMap(mp);
+    })
+    .catch((error) => {
+      console.error("Error fetching stations data:", error);
+    });
+}
+
+export function fetchAllRoutes(
+  data,
+  destinationStation,
+  getStationInfoById,
+  stationsMap,
+  setCurrentStationRoutes,
+  setSpecialStationRoutes,
+  setCurrentStationRoutesError
+) {
   fetch(`http://${IP}:8080/api/schedule/GetUpcomingBus`, {
     method: "POST",
     body: JSON.stringify(data),
