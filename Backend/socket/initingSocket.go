@@ -2,7 +2,6 @@ package socket
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 
 	socketio "github.com/googollee/go-socket.io"
@@ -37,12 +36,6 @@ func InitSocket(db *sql.DB) *socketio.Server {
 	listenForDisconnect(server, db)
 
 	listenOnDisconnect(server, db)
-
-	go func() {
-		fmt.Println("socket is listening")
-		server.Serve()
-		defer server.Close()
-	}()
 
 	return server
 }
