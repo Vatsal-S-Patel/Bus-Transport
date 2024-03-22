@@ -1,13 +1,13 @@
 package apis
 
 import (
-	"busproject/socket"
 	"net/http"
 
+	socketio "github.com/googollee/go-socket.io"
 	"github.com/gorilla/mux"
 )
 
-func (app *App) InitializeRoutes() *mux.Router {
+func (app *App) InitializeRoutes(server *socketio.Server) *mux.Router {
 
 	r := mux.NewRouter()
 
@@ -47,8 +47,6 @@ func (app *App) InitializeRoutes() *mux.Router {
 	stationRouter.HandleFunc("/", app.controller.CreateStationHandler).Methods("POST")
 	stationRouter.HandleFunc("/", app.controller.GetAllStationHandler).Methods("GET")
 	stationRouter.HandleFunc("/{id}", app.controller.DeleteStationHandler).Methods("POST")
-
-	server := socket.InitSocket(app.controller.DB)
 
 	r.Handle("/socket.io/", server)
 
