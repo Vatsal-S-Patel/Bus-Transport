@@ -3,7 +3,7 @@ import Icon from "ol/style/Icon";
 import Text from "ol/style/Text";
 import Fill from "ol/style/Fill";
 import stationIcon from "../../images/bus_image2.png";
-import busIcon from "../../images/image.png";
+import busIcon from "../../images/bus.png";
 import currentLocationIcon from "../../current_location.svg";
 
 
