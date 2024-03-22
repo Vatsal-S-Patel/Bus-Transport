@@ -5,6 +5,7 @@ import (
 	"busproject/configs"
 	"busproject/database"
 	"busproject/socket"
+	myLog "busproject/logging"
 	"context"
 	"errors"
 	"flag"
@@ -15,8 +16,8 @@ import (
 	"os/signal"
 	"sync"
 
-	socketio "github.com/googollee/go-socket.io"
 	"github.com/gorilla/mux"
+	socketio "github.com/googollee/go-socket.io"
 )
 
 func main() {
@@ -24,6 +25,7 @@ func main() {
 	var wg sync.WaitGroup
 	var r *mux.Router
 	var httpServer *http.Server
+	var logger *myLog.Logger
 
 	flag.BoolVar(&debug, "debug", false, "start server in debug mode")
 	flag.Parse()
@@ -35,12 +37,26 @@ func main() {
 	}
 
 	if debug {
-		err := configs.SetEnv("debug", "true")
+		err = myLog.InitLogger()
 		if err != nil {
 			log.Println(err)
 			return
 		}
+		err := configs.SetEnv("debug", "true")
+		if err != nil {
+			log.Println(err)
+			return
+		}	
+		logger,err = myLog.GetLogger()
+		if err != nil {
+			log.Println(err)
+		}
+		err = logger.LogThis("logging event is started yaay!!!")
+		if err != nil {
+			log.Println(err)
+		}
 	}
+
 
 	db, err := database.ConnectDB()
 	if err != nil {
