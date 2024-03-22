@@ -21,14 +21,19 @@ const BusLive = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
+
+  useEffect(()=>{
+    setInterval(()=>{
+      document.getElementById("submitBtn").click()
+    },4000)
+  },[])
  
   // Func to handle the submit and emit information to socket
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    var i = 0;
+
     // Set the interval to send data to socket after a specific time 
-    var clear = setInterval(() => {
+
       // Add data to send in the socket
       formData.last_updated = (new Date().toLocaleTimeString()).substring(0,5)
       formData.status = parseInt(formData.status)
@@ -36,8 +41,6 @@ const BusLive = () => {
       
 
       formData.bus_id = parseInt(busId);
-    
-
       formData.route_name = routeName
 
       // Error message for Fetching live location of Bus
@@ -50,7 +53,7 @@ const BusLive = () => {
         navigator.geolocation.watchPosition((position)=>{
           formData.lat = position.coords.latitude;
           formData.long = position.coords.longitude;
-        },errorCallback);
+        },errorCallback, { enableHighAccuracy: true });
       }
       
 
@@ -58,7 +61,6 @@ const BusLive = () => {
       console.log(formData);
       socket.emit('update', JSON.stringify(formData), parseInt(routeId))
 
-    }, 5000);
   };
 
 
