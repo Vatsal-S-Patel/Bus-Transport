@@ -12,7 +12,6 @@ const BusLive = () => {
 
   const [routeId,setRouteId] = useState("");
   const [routeName,setRouteName] = useState("");
-  const [busId,setBusId] = useState("");
 
   
   // The function to change state as per the change in the form data
@@ -38,11 +37,9 @@ const BusLive = () => {
       formData.status = parseInt(formData.status)
       formData.traffic = parseInt(formData.traffic)
       
-    
-     
       formData.route_name = routeName
-      if(busId === ""){
-        formData.bus_id = parseInt(busId);
+      if(formData.bus_id === ""){
+        formData.bus_id = 0;
       }
       // Error message for Fetching live location of Bus
       function errorCallback(error) {
@@ -61,7 +58,7 @@ const BusLive = () => {
       // Emit the request on update with json Data and RouteId as params work as Rooms to join for client
       console.log(formData);
       socket.emit('update', JSON.stringify(formData), parseInt(routeId))
-      socket.emit("bus",1)
+      socket.emit("bus",formData.bus_id)
 
   };
 
@@ -84,7 +81,7 @@ const BusLive = () => {
             id="bus_id"
             name="bus_id"
             value={formData.bus_id}
-            onChange={(e)=>{handleChange(e.target.value)}}
+            onChange={(e)=>{handleChange(e)}}
             className="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300"
             required
           />
@@ -135,7 +132,7 @@ const BusLive = () => {
             id="traffic"
             name="traffic"
             value={formData.traffic}
-            onChange={handleChange}
+            onChange={(e)=>(handleChange(e))}
             className="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300"
             required
           />
@@ -151,7 +148,7 @@ const BusLive = () => {
             id="status"
             name="status"
             value={formData.status}
-            onChange={handleChange}
+            onChange={(e)=>{handleChange(e)}}
             className="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring focus:border-blue-300"
             required
           >

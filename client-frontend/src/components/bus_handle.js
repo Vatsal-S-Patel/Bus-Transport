@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import IP from "../IP";
 import { useNavigate } from "react-router-dom";
+import { CustomizeTable } from "./sub-components/table_for_data";
 
 const BusHandle = () => {
   // States to save the Form Data and the Record from
@@ -10,6 +11,7 @@ const BusHandle = () => {
     model: "",
     registration_number: "",
   });
+  
   // TWO STATES ONE FOR STORING AND ONE FOR FILTERING , SO THE DATA IN STATE CAN NOT BE LOST
   const [filteredBuses, setFilteredBuses] = useState([]);
   const [allBuses, setAllBuses] = useState([]);
@@ -205,66 +207,8 @@ const BusHandle = () => {
           className="px-2 py-2 mt-10 border w-4/12 border-gray-300 rounded-md text-base focus:outline-none focus:border-blue-500 transition duration-300"
         />
       </center>
-      <hr></hr>
 
-      <div>
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                ID
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Capacity
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Model
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Number Plate
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {filteredBuses!= undefined ? filteredBuses.map((bus, index) => (
-              <tr key={bus.id}>
-                <td className="px-6 py-4 whitespace-nowrap">{bus.id}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{bus.capacity}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{bus.model}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {bus.registration_number}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <button
-                    onDoubleClick={() => handleDelete(bus.id, index)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            )) : ""}
-          </tbody>
-        </table>
-      </div>
+      <CustomizeTable details={busDetails} handleDelete={handleDelete} items={filteredBuses}/>
     </>
   );
 };

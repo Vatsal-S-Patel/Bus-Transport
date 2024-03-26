@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import IP from "../IP";
 import { useNavigate } from "react-router-dom";
+import { CustomizeTable, Table } from "./sub-components/table_for_data";
 
 const DriverHandle = () => {
   // States to handle form data and data from server
@@ -59,6 +60,8 @@ const DriverHandle = () => {
         alert("Success");
         setDrivers([...drivers, driverDetails]);
         setallDrivers([...allDrivers, driverDetails]);
+      }else{
+        alert(res.status)
       }
     } catch (err) {
       alert(err);
@@ -181,72 +184,8 @@ const DriverHandle = () => {
           className="px-2 py-2 mt-10 border w-4/12 border-gray-300 rounded-md text-base focus:outline-none focus:border-blue-500 transition duration-300"
         />
       </center>
-      <div>
-        <hr></hr>
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                ID
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Name
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Phone
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Gender
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Date of Birth
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {drivers!= undefined ? drivers.map((driver, index) => (
-              <tr key={"index"}>
-                <td className="px-6 py-4 whitespace-nowrap">{driver.id}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{driver.name}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{driver.phone}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {driver.gender ? "female" : "male"}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">{driver.dob}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <button
-                    onDoubleClick={() => handleDelete(driver.id, index)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            )):""}
-          </tbody>
-        </table>
-      </div>
+      
+      <CustomizeTable details={driverDetails} handleDelete={handleDelete} items={drivers}/>
     </>
   );
 };
