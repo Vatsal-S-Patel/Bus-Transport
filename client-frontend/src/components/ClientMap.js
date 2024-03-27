@@ -7,7 +7,10 @@ import backIcon from "../images/backward-3-svgrepo-com.svg";
 import IP from "../IP.js";
 import { IndirectRoutes } from "./sub-components/indirect_route_component.js";
 import { DirectRoutes } from "./sub-components/direct_route_component.js";
-import { FetchStations, fetchAllRoutes } from "./sub-components/fetch_routes_api.js";
+import {
+  FetchStations,
+  fetchAllRoutes,
+} from "./sub-components/fetch_routes_api.js";
 
 /* Initially get all stations information then no need to bother api about this. */
 function getStationInfoById(stationId, stationsMap) {
@@ -32,7 +35,8 @@ const ClientMap = () => {
 
   // After selecting source and destination we will show user below information
   const [currentStationRoutes, setCurrentStationRoutes] = useState([]);
-  const [currentStationRoutesError, setCurrentStationRoutesError] = useState(null);
+  const [currentStationRoutesError, setCurrentStationRoutesError] =
+    useState(null);
   const [specialStationRoutes, setSpecialStationRoutes] = useState([]);
 
   const [currentBuses, setCurrentBuses] = useState([]);
@@ -42,6 +46,8 @@ const ClientMap = () => {
 
   // Initially set it false
   const [expanded, setExpanded] = useState(false);
+  var socket = window._DEFAULT_DATA;
+
 
   // Event handler for source station select
   const handleSourceChange = (newValue) => {
@@ -131,7 +137,7 @@ const ClientMap = () => {
         setCurrentBuses([...currentBuses, busInfo]);
       }
     });
-    
+
     setCurrentStationRoutes(newArray);
   }, [currentBuses]);
 
@@ -146,23 +152,26 @@ const ClientMap = () => {
       // Reset Station Routes
       setCurrentStationRoutes([]);
       setCurrentStationRoutesError(null);
-     
-      fetchAllRoutes(data,destinationStation,getStationInfoById,stationsMap
-        ,setCurrentStationRoutes,setSpecialStationRoutes,setCurrentStationRoutesError);
+
+      fetchAllRoutes(
+        data,
+        destinationStation,
+        getStationInfoById,
+        stationsMap,
+        setCurrentStationRoutes,
+        setSpecialStationRoutes,
+        setCurrentStationRoutesError
+      );
     }
     setCurrentBuses([]);
-
   }, [sourceStation, destinationStation, stations]);
 
   useEffect(() => {
 
-    FetchStations(setStations,setStationsMap)
+    FetchStations(setStations, setStationsMap,socket);
     socket.on("roomJoined", (data) => {
       // console.log("Room joined", data);
     });
-    return () => {
-      socket.close();
-    };
   }, []);
 
   return (
