@@ -27,7 +27,8 @@ export function fetchAllRoutes(
   stationsMap,
   setCurrentStationRoutes,
   setSpecialStationRoutes,
-  setCurrentStationRoutesError
+  setCurrentStationRoutesError,
+  socket
 ) {
   fetch(`http://${IP}:8080/api/schedule/GetUpcomingBus`, {
     method: "POST",
