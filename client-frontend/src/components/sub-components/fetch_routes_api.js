@@ -1,6 +1,6 @@
 import IP from "../../IP";
 
-export function FetchStations(setStations,setStationsMap) {
+export function FetchStations(setStations,setStationsMap,socket) {
   // Function to fetch all the stations and set them to states
   fetch(`http://${IP}:8080/api/station/`)
     .then((response) => response.json())
@@ -27,7 +27,8 @@ export function fetchAllRoutes(
   stationsMap,
   setCurrentStationRoutes,
   setSpecialStationRoutes,
-  setCurrentStationRoutesError
+  setCurrentStationRoutesError,
+  socket
 ) {
   fetch(`http://${IP}:8080/api/schedule/GetUpcomingBus`, {
     method: "POST",
