@@ -21,9 +21,6 @@ const BusLive = () => {
 	};
 
 	useEffect(() => {
-		window.onload = () => {
-			socket = window._DEFAULT_DATA;
-		};
 		setInterval(() => {
 			document.getElementById("submitBtn").click();
 		}, 4000);
