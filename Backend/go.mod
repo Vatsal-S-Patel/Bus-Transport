@@ -10,7 +10,8 @@ require (
 )
 
 require (
-	github.com/gofrs/uuid v4.0.0+incompatible // indirect
-	github.com/gomodule/redigo v1.8.4 // indirect
-	github.com/gorilla/websocket v1.4.2 // indirect
+	github.com/gofrs/uuid v4.4.0+incompatible // indirect
+	github.com/gomodule/redigo v1.9.2 // indirect
+	github.com/gorilla/websocket v1.5.1 // indirect
+	golang.org/x/net v0.22.0 // indirect
 )
