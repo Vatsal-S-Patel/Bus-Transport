@@ -27,6 +27,9 @@
     <script>
       // Connect to socket when the React App Initialized
       var socket = io("http://localhost:8080", { transports: ["polling"] });
+
+      window._DEFAULT_DATA = socket
+
       socket.on("connect", () => {
         console.log("Connection established");
       });
