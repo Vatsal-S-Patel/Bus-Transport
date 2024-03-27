@@ -160,7 +160,8 @@ const ClientMap = () => {
         stationsMap,
         setCurrentStationRoutes,
         setSpecialStationRoutes,
-        setCurrentStationRoutesError
+        setCurrentStationRoutesError,
+        socket
       );
     }
     setCurrentBuses([]);
