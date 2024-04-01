@@ -183,6 +183,7 @@ const BusRouteHandle = () => {
           <form onSubmit={handleSubmit} className="max-w-md">
             <div className="grid grid-cols-2 gap-4">
               <div className="mb-4">
+                <label>Route Id</label>
                 <input
                   type="number"
                   id="id"
@@ -194,6 +195,7 @@ const BusRouteHandle = () => {
                 />
               </div>
               <div className="mb-4">
+              <label>Route Name</label>
                 <input
                   type="text"
                   id="name"
@@ -205,6 +207,7 @@ const BusRouteHandle = () => {
                 />
               </div>
               <div className="mb-4">
+                <label>Source Id</label>
                 <input
                   type="number"
                   id="source"
@@ -216,6 +219,7 @@ const BusRouteHandle = () => {
                 />
               </div>
               <div className="mb-4">
+              <label>Destination Id</label>
                 <input
                   type="number"
                   id="destination"
@@ -227,6 +231,7 @@ const BusRouteHandle = () => {
                 />
               </div>
               <div className="mb-4">
+              <label>Route Status</label>
                 <input
                   type="number"
                   id="status"
