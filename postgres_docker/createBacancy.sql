@@ -1,0 +1,6 @@
+CREATE DATABASE bacancy;
+
+CREATE ROLE vatsal;
+CREATE ROLE tridip;
+CREATE ROLE manav;
+CREATE ROLE ketan;

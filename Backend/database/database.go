@@ -1,18 +1,17 @@
 package database
 
 import (
-	"busproject/configs"
 	"database/sql"
 	"log"
-
+	"os"
 	_ "github.com/lib/pq"
 )
 
 func ConnectDB() (*sql.DB, error) {
 
-	connStr, err := configs.GetEnv("DBCONN_URL")
-	if err != nil {
-		return nil, err
+	connStr,ok:= os.LookupEnv("DBCONN_URL")
+	if !ok {
+		connStr = `postgres://manav:clash@localhost:5432/bacancy?sslmode=disable`
 	}
 
 	conn, err := sql.Open("postgres", connStr)

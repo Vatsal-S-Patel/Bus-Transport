@@ -2,12 +2,10 @@ package main
 
 import (
 	"busproject/apis"
-	"busproject/configs"
 	"busproject/database"
-	"busproject/socket"
 	myLog "busproject/logging"
+	"busproject/socket"
 	"context"
-	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -16,8 +14,8 @@ import (
 	"os/signal"
 	"sync"
 
-	"github.com/gorilla/mux"
 	socketio "github.com/googollee/go-socket.io"
+	"github.com/gorilla/mux"
 )
 
 func main() {
@@ -30,24 +28,24 @@ func main() {
 	flag.BoolVar(&debug, "debug", false, "start server in debug mode")
 	flag.Parse()
 
-	err := configs.ReadEnv()
-	if err != nil {
-		log.Println(err.Error())
-		return
-	}
+	// err := godotenv.Load(".env")
+	// if err != nil {
+	// log.Println(err.Error())
+	// return
+	// }
 
 	if debug {
-		err = myLog.InitLogger()
+		err := myLog.InitLogger()
 		if err != nil {
 			log.Println(err)
 			return
 		}
-		err := configs.SetEnv("debug", "true")
+		err = os.Setenv("debug", "true")
 		if err != nil {
 			log.Println(err)
 			return
-		}	
-		logger,err = myLog.GetLogger()
+		}
+		logger, err = myLog.GetLogger()
 		if err != nil {
 			log.Println(err)
 		}
@@ -56,7 +54,6 @@ func main() {
 			log.Println(err)
 		}
 	}
-
 
 	db, err := database.ConnectDB()
 	if err != nil {
@@ -91,12 +88,11 @@ func main() {
 
 func startServer(httpServer *http.Server, socketserver *socketio.Server, wg *sync.WaitGroup) error {
 	defer wg.Done()
-	server_port, err := configs.GetEnv("SERVER_PORT")
+	server_port, ok := os.LookupEnv("SERVER_PORT")
 
-	if errors.Is(err, configs.ErrDataNotExist) {
+	// if errors.Is(err, configs.ErrDataNotExist) {
+	if !ok {
 		server_port = "8080"
-	} else if err != nil {
-		return err
 	}
 
 	httpServer.Addr = ":" + server_port
