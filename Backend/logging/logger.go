@@ -1,7 +1,6 @@
 package logging
 
 import (
-	"busproject/configs"
 	"log"
 	"os"
 	"sync"
@@ -39,10 +38,10 @@ func GetLogger() (*Logger, error) {
 
 func (l *Logger) LogThis(data string) error {
 	log.Println(data)
-	if v, _ := configs.GetEnv("debug"); v == "true" {
+	if v, ok := os.LookupEnv("debug"); ok && v == "true" {
 		l.Mu.Lock()
 		defer l.Mu.Unlock()
-		_, err := l.File.WriteString(time.Now().Local().Format("2015-02-25 11:06:39") +" "+ data + "\n")
+		_, err := l.File.WriteString(time.Now().Local().Format("2015-02-25 11:06:39") + " " + data + "\n")
 		return err
 	}
 	return nil
