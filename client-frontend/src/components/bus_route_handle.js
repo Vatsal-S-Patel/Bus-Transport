@@ -78,7 +78,17 @@ const BusRouteHandle = () => {
     });
     // ADD DATA WITH THE ROUTE DATA OF FORM
     var dataToSend = { ...routeDetails, ["Mapping"]: OrderOfStationsInRoute };
-
+    if (!dataToSend.name){
+      alert("please select a meaningful name")
+      return
+    }
+    if (OrderOfStationsInRoute.length < 2){
+      alert("please select at least two stations")
+      return
+    }
+    dataToSend.source = OrderOfStationsInRoute[0].station_id
+    dataToSend.destination = OrderOfStationsInRoute[OrderOfStationsInRoute.length - 1].station_id
+    console.log(OrderOfStationsInRoute , dataToSend)
     // POST REQUEST FOR TH EROUTES AND MAPPING , CHECK THE ERROR
     try {
       fetch("http://" + IP + ":8080/api/route/", {
@@ -176,144 +186,158 @@ const BusRouteHandle = () => {
   };
 
   return (
-    <div>
-      <center>
-        <div className="container mx-auto mt-8">
-          <h2 className="text-2xl font-bold mb-4">Add Route</h2>
-          <form onSubmit={handleSubmit} className="max-w-md">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="mb-4">
-                <input
-                  type="number"
-                  id="id"
-                  name="id"
-                  value={routeDetails.id}
-                  onChange={handleChange}
-                  placeholder="Enter Route Id"
-                  className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-300"
-                />
-              </div>
-              <div className="mb-4">
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={routeDetails.name}
-                  onChange={handleChange}
-                  placeholder="Enter Name"
-                  className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-300"
-                />
-              </div>
-              <div className="mb-4">
-                <input
-                  type="number"
-                  id="source"
-                  name="source"
-                  value={routeDetails.source}
-                  onChange={handleChange}
-                  placeholder="Enter Source"
-                  className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-300"
-                />
-              </div>
-              <div className="mb-4">
-                <input
-                  type="number"
-                  id="destination"
-                  name="destination"
-                  value={routeDetails.destination}
-                  onChange={handleChange}
-                  placeholder="Enter Destination"
-                  className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-300"
-                />
-              </div>
-              <div className="mb-4">
-                <input
-                  type="number"
-                  id="status"
-                  name="status"
-                  value={routeDetails.status}
-                  onChange={handleChange}
-                  placeholder="Enter Status"
-                  className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-300"
-                />
-              </div>
-              <div className="flex justify-center my-3 mx-2">
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white w-full  rounded hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
-                >
-                  Submit
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-        <hr></hr>
-        <div className="grid grid-cols-2 ">
-          <div className="station display-flex">
-            {station!= undefined ? station.map((s, index) => {
-              return (
-                <button
-                  key={index}
-                  type="button"
-                  onClick={() => {
-                    handleStationsInRoute(s.id, s.name);
-                  }}
-                  className="text-white font-semibold p-1 px-1 m-2 text-sm text-blue-500 border-2 rounded hover:bg-blue-500 hover:text-white focus:outline-none focus:ring focus:border-blue-300"
-                >
-                  {s.name} ({s.id})
-                </button>
-              );
-            }):""}
-          </div>
-          <div className="tableOrder">
-            <table className="w-5/12">
-              <thead>
-                <tr>
-                  <th>Order</th>
-                  <th>Station</th>
-                  <th>Delete </th>
-                </tr>
-              </thead>
-              <tbody>
-                {orderStations != undefined ? orderStations.map((orderStation, index) => (
-                  <>
-                    <tr className="p-3 " key={index}>
-                      <td className="text-sm m-5">{index + 1}</td>
-                      <td className="text-sm m-5">{orderStation.station}</td>
-                      <td className="m-5">
-                        <button
-                          className="bg-red-500 text-xs text-white w-11/12 p-1 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-300"
-                          onClick={() => {
-                            handleDeleteStation(orderStation.order);
-                          }}
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                    </tr>
-                  </>
-                )):""}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <input
-          type="text"
-          placeholder="Search..."
-          onChange={handleFilteredItems}
-          className="px-2 py-2 mt-10 border w-4/12 border-gray-300 rounded-md text-base focus:outline-none focus:border-blue-500 transition duration-300"
-        />
-      </center>
+		<div>
+			<center>
+				<div className='container mx-auto mt-8'>
+					<h2 className='text-2xl font-bold mb-4'>Add Route</h2>
+					<form onSubmit={handleSubmit} className='max-w-md'>
+						<div className='grid grid-cols-2 gap-4'>
+							<div className='mb-4'>
+								<input
+									type='number'
+									id='id'
+									name='id'
+									onChange={handleChange}
+									placeholder='Enter Route Id'
+									className='mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-300'
+								/>
+							</div>
+							<div className='mb-4'>
+								<input
+									type='text'
+									id='name'
+									name='name'
+									onChange={handleChange}
+									placeholder='Enter Name'
+									className='mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-300'
+								/>
+							</div>
+							{/* Deleted source and destination text box by manav vyas */}
+							{/*<div className='mb-4'>
+								<input
+									type='number'
+									id='source'
+									name='source'
+									value={routeDetails.source}
+									onChange={handleChange}
+									placeholder='Enter Source'
+									className='mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-300'
+								/>
+							</div>
+							<div className='mb-4'>
+								<input
+									type='number'
+									id='destination'
+									name='destination'
+									value={routeDetails.destination}
+									onChange={handleChange}
+									placeholder='Enter Destination'
+									className='mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-300'
+								/>
+  </div>*/}
+							<div className='mb-4'>
+								{/*<option
+									type='number'
+									id='status'
+									name='status'
+									onChange={handleChange}
+									placeholder='Enter Status'
+									className='mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-300'
+/>*/}
+								<select
+									name='status'
+									id='status'
+									onChange={handleChange}
+									className='mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-300'>
+									<option value='0'>Inactive</option>
+									<option value='1'>Active</option>
+								</select>
+							</div>
+							<div className='flex justify-center my-3 mx-2'>
+								<button
+									type='submit'
+									className='bg-blue-500 text-white w-full  rounded hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300'>
+									Submit
+								</button>
+							</div>
+						</div>
+					</form>
+				</div>
+				<hr></hr>
+				<div className='grid grid-cols-2 '>
+					<div className='station display-flex'>
+						{station != undefined
+							? station.map((s, index) => {
+									return (
+										<button
+											key={index}
+											type='button'
+											onClick={() => {
+												handleStationsInRoute(s.id, s.name);
+											}}
+											className='text-white font-semibold p-1 px-1 m-2 text-sm text-blue-500 border-2 rounded hover:bg-blue-500 hover:text-white focus:outline-none focus:ring focus:border-blue-300'>
+											{s.name} ({s.id})
+										</button>
+									);
+							  })
+							: ""}
+					</div>
+					<div className='tableOrder'>
+						<table className='w-5/12'>
+							<thead>
+								<tr>
+									<th>Order</th>
+									<th>Station</th>
+									<th>Delete </th>
+								</tr>
+							</thead>
+							<tbody>
+								{orderStations != undefined
+									? orderStations.map((orderStation, index) => (
+											<>
+												<tr className='p-3 ' key={index}>
+													<td className='text-sm m-5'>{index + 1}</td>
+													<td className='text-sm m-5'>
+														{orderStation.station}
+													</td>
+													<td className='m-5'>
+														<button
+															className='bg-red-500 text-xs text-white w-11/12 p-1 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-300'
+															onClick={() => {
+																handleDeleteStation(orderStation.order);
+															}}>
+															Delete
+														</button>
+													</td>
+												</tr>
+												<tr>
+													<td></td>
+													<td></td>
+													<td></td>
+												</tr>
+											</>
+									  ))
+									: ""}
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<input
+					type='text'
+					placeholder='Search...'
+					onChange={handleFilteredItems}
+					className='px-2 py-2 mt-10 border w-4/12 border-gray-300 rounded-md text-base focus:outline-none focus:border-blue-500 transition duration-300'
+				/>
+			</center>
 
-      <CustomizeTable details={routeDetails} handleDelete={handleDelete} items={routes} isRoute={true}/>
-    </div>
-  );
+			<CustomizeTable
+				details={routeDetails}
+				handleDelete={handleDelete}
+				items={routes}
+				isRoute={true}
+			/>
+		</div>
+	);
 };
 
 export default BusRouteHandle;
