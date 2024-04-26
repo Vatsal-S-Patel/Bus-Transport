@@ -54,6 +54,7 @@ const ScheduleHandle = () => {
 
     // POST request to server for data entry
     try {
+      console.log(scheduleDetails)
       const res = await fetch("http://" + IP + ":8080/api/schedule/", {
         method: "POST",
         body: JSON.stringify(scheduleDetails),
@@ -150,7 +151,7 @@ const ScheduleHandle = () => {
               </div>
               <div className="mb-4">
                 <input
-                  type="text"
+                  type="time"
                   id="dep"
                   name="dep"
                   value={scheduleDetails.dep}

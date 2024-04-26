@@ -7,7 +7,7 @@ const BusHandle = () => {
   // States to save the Form Data and the Record from
   const [busDetails, setBusDetails] = useState({
     id: 0,
-    capacity: 0,
+    capacity: 50,
     model: "",
     registration_number: "",
   });
@@ -132,7 +132,6 @@ const BusHandle = () => {
                   type="number"
                   id="id"
                   name="id"
-                  value={busDetails.id}
                   onChange={handleChange}
                   placeholder="Enter ID"
                   className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-300"
@@ -166,7 +165,6 @@ const BusHandle = () => {
                   type="text"
                   id="model"
                   name="model"
-                  value={busDetails.model}
                   onChange={handleChange}
                   placeholder="Eicher"
                   className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-300"
@@ -183,7 +181,6 @@ const BusHandle = () => {
                   type="text"
                   id="registration_number"
                   name="registration_number"
-                  value={busDetails.registration_number}
                   onChange={handleChange}
                   placeholder="GJ01XB1231"
                   className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-300"

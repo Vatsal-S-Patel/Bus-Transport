@@ -105,47 +105,47 @@ const DriverHandle = () => {
   };
 
   return (
-    <>
-      <center>
-        <div className="container mx-auto mt-8">
-          <h2 className="text-2xl font-bold mb-4">Add Driver</h2>
-          <form onSubmit={handleSubmit} className="max-w-md">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="mb-4">
-                <input
-                  type="number"
-                  id="id"
-                  name="id"
-                  value={driverDetails.id}
-                  onChange={handleChange}
-                  placeholder="Enter Driver ID"
-                  className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-300"
-                />
-              </div>
-              <div className="mb-4">
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={driverDetails.name}
-                  onChange={handleChange}
-                  placeholder="Enter Name"
-                  className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-300"
-                />
-              </div>
-              <div className="mb-4">
-                <input
-                  type="text"
-                  id="phone"
-                  name="phone"
-                  value={driverDetails.phone}
-                  onChange={handleChange}
-                  placeholder="+91 75676 75676"
-                  className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-300"
-                />
-              </div>
-              <div className="mb-4">
-                <input
+		<>
+			<center>
+				<div className='container mx-auto mt-8'>
+					<h2 className='text-2xl font-bold mb-4'>Add Driver</h2>
+					<form onSubmit={handleSubmit} className='max-w-md'>
+						<div className='grid grid-cols-2 gap-4'>
+							<div className='mb-4'>
+								<input
+									type='number'
+									id='id'
+									name='id'
+									value={driverDetails.id}
+									onChange={handleChange}
+									placeholder='Enter Driver ID'
+									className='mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-300'
+								/>
+							</div>
+							<div className='mb-4'>
+								<input
+									type='text'
+									id='name'
+									name='name'
+									value={driverDetails.name}
+									onChange={handleChange}
+									placeholder='Enter Name'
+									className='mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-300'
+								/>
+							</div>
+							<div className='mb-4'>
+								<input
+									type='text'
+									id='phone'
+									name='phone'
+									value={driverDetails.phone}
+									onChange={handleChange}
+									placeholder='+91 75676 75676'
+									className='mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-300'
+								/>
+							</div>
+							<div className='mb-4'>
+								{/*<input
                   type="number"
                   id="gender"
                   name="gender"
@@ -153,41 +153,52 @@ const DriverHandle = () => {
                   onChange={handleChange}
                   placeholder="Enter Gender"
                   className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-300"
-                />
-              </div>
-              <div className="mb-4">
-                <input
-                  type="text"
-                  id="dob"
-                  name="dob"
-                  value={driverDetails.dob}
-                  onChange={handleChange}
-                  placeholder="DD-MM-YYYY"
-                  className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-300"
-                />
-              </div>
-              <div className="flex justify-center my-3 mx-2">
-                <button
-                  onClick={handleSubmit}
-                  className="bg-blue-500 text-white w-full  rounded hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
-                >
-                  Submit
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-        <input
-          type="text"
-          placeholder="Search..."
-          onChange={handleFilteredItems}
-          className="px-2 py-2 mt-10 border w-4/12 border-gray-300 rounded-md text-base focus:outline-none focus:border-blue-500 transition duration-300"
-        />
-      </center>
-      
-      <CustomizeTable details={driverDetails} handleDelete={handleDelete} items={drivers}/>
-    </>
-  );
+  />*/}
+								<select
+									name='gender'
+									id='gender'
+									onChange={handleChange}
+									className='mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-300'>
+									<option value='0'>Male</option>
+									<option value='1'>Female</option>
+								</select>
+							</div>
+							<div className='mb-4'>
+								<input
+									type='date'
+									id='dob'
+									name='dob'
+									value={driverDetails.dob}
+									onChange={handleChange}
+									placeholder='DD-MM-YYYY'
+									className='mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-300'
+								/>
+							</div>
+							<div className='flex justify-center my-3 mx-2'>
+								<button
+									onClick={handleSubmit}
+									className='bg-blue-500 text-white w-full  rounded hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300'>
+									Submit
+								</button>
+							</div>
+						</div>
+					</form>
+				</div>
+				<input
+					type='text'
+					placeholder='Search...'
+					onChange={handleFilteredItems}
+					className='px-2 py-2 mt-10 border w-4/12 border-gray-300 rounded-md text-base focus:outline-none focus:border-blue-500 transition duration-300'
+				/>
+			</center>
+
+			<CustomizeTable
+				details={driverDetails}
+				handleDelete={handleDelete}
+				items={drivers}
+			/>
+		</>
+	);
 };
 
 export default DriverHandle;
